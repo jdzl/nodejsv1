@@ -61,19 +61,34 @@ io.on('connection', function(socket) {
     
 }); 
   
-/*
-  socket.on('message', function(msg) {
-    io.emit('message', res.nombre);
-  });
-  */
-
-  /**
-   * Mostramos en consola cada vez que un usuario
-   * se desconecte del sistema.
-   */
   socket.on('disconnect', function() {
     console.log('User disconnected');
   });
+
+  socket.on('name', function(data) {
+    client.query('SELECT * FROM personaje where nombre="'+data.name+'"', function selectUsuario(err, results, fields) {
+ 
+              if (err) {
+                  console.log("Error: " + err.message);
+                  throw err;
+              }
+              if(results.length > 0){
+              console.log("Usuario existe en la BD");
+              io.emit('message', results);
+              
+              }else{
+
+                console.log("Nuevo usuario "+ data.name);
+                client.query(
+                            'INSERT INTO personaje SET nombre = ?, apellido = ?',
+                              [data.name, data.lastname]
+                );
+                
+              }              
+    
+      }); 
+    
+    });
   
 });
 
