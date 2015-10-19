@@ -21,8 +21,6 @@ app.get('/sitemap',function(req,res){
 });
 
 app.use(express["static"](__dirname + '/public'));
-//app.listen(3000);
-
 
 var mysql = require('mysql');
  
@@ -33,14 +31,6 @@ var client = mysql.createConnection({
 });
 
 client.query('USE test');
-
- /*
-client.query(
-  'INSERT INTO usuario SET nombre = ?, password = ?',
-  ['carlosro_ec', 'miclave']
-);
-*/
-
 
 //  Sockets 
 
