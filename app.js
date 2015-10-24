@@ -45,7 +45,7 @@ io.on('connection', function(socket) {
                   throw err;
               }
  
-              console.log("Number of rows: "+results.length);
+           //   console.log("Number of rows: "+results.length);
     
               io.emit('message', results); 
     
@@ -64,7 +64,7 @@ io.on('connection', function(socket) {
               }
               if(results.length > 0){
               console.log("Usuario existe en la BD");
-              io.emit('message', results);
+            //  io.emit('message', results);
               
               }else{
 

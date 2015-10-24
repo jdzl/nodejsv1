@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nodejs Linux</title>
- 
+    <title>Nodejs Linux</title> 
     <!-- CSS de Bootstrap -->
  
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -24,18 +23,25 @@
   <body>
 <form class="form-inline">
   <div class="form-group">
-    <label for="exampleInputName2">Name</label>
-    <input type="text" class="form-control" id="nombre" placeholder="Jane Doe">
+    <label for="exampleInputName2">Nick</label>
+    <input type="text" class="form-control" id="nombre" placeholder="***********">
   </div>
   <div class="form-group">
-    <label for="exampleInputEmail2">Email</label>
-    <input type="text" class="form-control" id="apellido" placeholder="jane.doe@example.com">
+    <label for="exampleInputEmail2">Name</label>
+    <input type="text" class="form-control" id="apellido" placeholder="**********">
   </div>
-  <button id="sendname"  class="btn btn-default">Send invitation</button>
+  <button id="sendname"  class="btn btn-default">Log</button>
 </form>
+
+
+  
+  <div class="panel panel-primary">
  
-  <div id="resp">
-  </div>
+  <div class="panel-heading">Usuarios</div>
+  <div class="panel-body">    
+  </div>   
+     <div id="resp"></div>      
+</div>  
   
   <script src="http://code.jquery.com/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -47,10 +53,22 @@
     */
       socket.on('message', function (msg) {
 
-      var a="";
-          for (var i = msg.length - 1; i >= 0; i--) {
-            a += msg[i].nombre +" : " + msg[i].apellido + "</br>";
-          };
+      var a=`<table class='table'>
+                <thead>
+                <tr>
+                  <th>Nick</th>
+                  <th>Name</th>        
+                </tr>
+                </thead>
+                <tbody>`;      
+      
+                for (var i = msg.length - 1; i >= 0; i--) {
+                    a += "<tr><td>"+msg[i].nombre +" </td><td> " + msg[i].apellido + "</td></tr>";
+                };
+
+          a+=`</tbody>
+              </table>`;
+
           $("#resp").html(a);
       });
 
@@ -61,9 +79,7 @@
                               lastname: $('#apellido').val()
                           });
         return false;
-      });
-
-    
+      });    
   </script>
   <script src="js/bootstrap.min.js"></script>
   </body>
