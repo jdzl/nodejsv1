@@ -16,10 +16,6 @@ app.get('/about',function(req,res){
   res.sendFile(path.join(__dirname+'/about.html'));
 });
 
-app.get('/sitemap',function(req,res){
-  res.sendFile(path.join(__dirname+'/sitemap.html'));
-});
-
 app.use(express["static"](__dirname + '/public'));
 
 var mysql = require('mysql');
@@ -38,7 +34,7 @@ io.on('connection', function(socket) {
   
   console.log('New user connected');
 
- client.query('SELECT * FROM personaje', function selectUsuario(err, results, fields) { 
+ client.query('SELECT * FROM personaje', function (err, results, fields) { 
               if (err) {
                   console.log("Error: " + err.message);
                   throw err;
@@ -50,7 +46,7 @@ io.on('connection', function(socket) {
   socket.on('disconnect', function() {
     if(socket.name){
           client.query('DELETE FROM personaje where nombre= ?',socket.name);      
-                  client.query('SELECT * FROM personaje', function selectUsuario(err, results, fields) { 
+                  client.query('SELECT * FROM personaje', function (err, results, fields) { 
                       if (err) {
                           console.log("Error: " + err.message);
                           throw err;
@@ -68,7 +64,7 @@ io.on('connection', function(socket) {
 
 
   socket.on('name', function(data) {
-    client.query('SELECT * FROM personaje where nombre="'+data.name+'"', function selectUsuario(err, results, fields) {
+    client.query('SELECT * FROM personaje where nombre="'+data.name+'"', function (err, results, fields) {
  
               if (err) {
                   console.log("Error: " + err.message);
