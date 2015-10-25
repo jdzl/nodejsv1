@@ -19,8 +19,16 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style >
+    div.scroll {
+  
+    width: 100%;
+    height: 270px;
+    overflow: scroll;
+}
+    </style>
   </head>
-  <body>
+<body>
 <form class="form-inline">
   <div class="form-group">
     <label for="exampleInputName2">Nick</label>
@@ -32,16 +40,43 @@
   </div>
   <button id="sendname"  class="btn btn-default">Log</button>
 </form>
-
-
+  <div class="row">
   
-  <div class="panel panel-primary">
+  </br>
+
+     <!-- /.navbar-top-links -->
+<div class="col-xs-2 col-md-2">
+            <div class="panel panel-primary">
  
   <div class="panel-heading">Usuarios</div>
   <div class="panel-body">    
   </div>   
      <div id="resp"></div>      
-</div>  
+</div>
+</div>
+  <div class="col-xs-12 col-md-8">
+            <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">On</h3>
+            </div>
+            <div id="nodechat"class="panel-body scroll">
+              
+            </div>
+          </div>  
+<div class="input-group input-group-lg">
+  <span class="input-group-addon" id="sizing-addon1"> <span class="glyphicon glyphicon-tint"></span></span>
+  <input id="dataUser" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
+</div>
+
+          <div class="btn-group" role="group" aria-label="...">
+            <button id="sendData" type="button" class="btn btn-success">Send </button>
+            <button type="button" class="btn btn-info">Clear</button>
+            <button type="button" class="btn btn-primary">Copy</button>
+          </div>    
+  </div>
+</div>
+  
+  
   
   <script src="http://code.jquery.com/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -51,8 +86,7 @@
     *
     *@Param msg :  select tabla personajes  formato JSON
     */
-      socket.on('message', function (msg) {
-
+      socket.on('infoUsers', function (msg) {
       var a=`<table class='table'>
                 <thead>
                 <tr>
@@ -71,6 +105,11 @@
 
           $("#resp").html(a);
       });
+      socket.on('msg', function (msg) {
+
+            $("#nodechat").html($("#nodechat").html()+"</br>"+msg);
+
+      });
 
       $('#sendname').click(function(){
 
@@ -79,7 +118,33 @@
                               lastname: $('#apellido').val()
                           });
         return false;
-      });    
+      });  
+
+      $('#sendData').click(function(){
+
+        socket.emit('message',$('#dataUser').val()  );
+        $('#dataUser').val('');
+        return false;
+      }); 
+     
+
+    setInterval(function () {
+
+        var iScroll = $(window).scrollTop();
+
+        iScroll = iScroll + 200;
+
+        $('#nodechat').animate({
+
+            scrollTop: iScroll
+
+        }, 1000);
+
+    }, 2000);
+
+
+
+      
   </script>
   <script src="js/bootstrap.min.js"></script>
   </body>

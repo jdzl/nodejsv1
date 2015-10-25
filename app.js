@@ -47,12 +47,23 @@ io.on('connection', function(socket) {
  
            //   console.log("Number of rows: "+results.length);
     
-              io.emit('message', results); 
+              io.emit('infoUsers', results); 
     
 }); 
   
   socket.on('disconnect', function() {
+    if(socket.name){
+          client.query('DELETE FROM personaje where nombre= ?',socket.name);      
+    }
+
     console.log('User disconnected');
+
+  });
+
+  socket.on('message', function(message) {
+    //console.log(message);
+    io.emit('msg',socket.name +" :"+ message);
+
   });
 
   socket.on('name', function(data) {
@@ -69,6 +80,8 @@ io.on('connection', function(socket) {
               }else{
 
                 console.log("Nuevo usuario "+ data.name);
+                socket.name = data.name;
+
                 client.query(
                             'INSERT INTO personaje SET nombre = ?, apellido = ?',
                               [data.name, data.lastname]
