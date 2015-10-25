@@ -38,33 +38,34 @@ io.on('connection', function(socket) {
   
   console.log('New user connected');
 
- client.query('SELECT * FROM personaje', function selectUsuario(err, results, fields) {
- 
+ client.query('SELECT * FROM personaje', function selectUsuario(err, results, fields) { 
               if (err) {
                   console.log("Error: " + err.message);
                   throw err;
-              }
- 
-           //   console.log("Number of rows: "+results.length);
+              }          
     
-              io.emit('infoUsers', results); 
-    
+              io.emit('infoUsers', results);    
 }); 
   
   socket.on('disconnect', function() {
     if(socket.name){
           client.query('DELETE FROM personaje where nombre= ?',socket.name);      
+                  client.query('SELECT * FROM personaje', function selectUsuario(err, results, fields) { 
+                      if (err) {
+                          console.log("Error: " + err.message);
+                          throw err;
+                      }          
+            
+                      io.emit('infoUsers', results);    
+                  }); 
     }
 
     console.log('User disconnected');
 
   });
 
-  socket.on('message', function(message) {
-    //console.log(message);
-    io.emit('msg',socket.name +" :"+ message);
+  socket.on('message', function(message) { io.emit('msg',socket.name +" :"+ message);  });
 
-  });
 
   socket.on('name', function(data) {
     client.query('SELECT * FROM personaje where nombre="'+data.name+'"', function selectUsuario(err, results, fields) {
@@ -86,6 +87,15 @@ io.on('connection', function(socket) {
                             'INSERT INTO personaje SET nombre = ?, apellido = ?',
                               [data.name, data.lastname]
                 );
+
+                client.query('SELECT * FROM personaje', function selectUsuario(err, results, fields) { 
+              if (err) {
+                  console.log("Error: " + err.message);
+                  throw err;
+              }          
+    
+              io.emit('infoUsers', results);    
+}); 
                 
               }              
     

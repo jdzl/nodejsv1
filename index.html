@@ -70,7 +70,7 @@
 
           <div class="btn-group" role="group" aria-label="...">
             <button id="sendData" type="button" class="btn btn-success">Send </button>
-            <button type="button" class="btn btn-info">Clear</button>
+            <button id="clearData" type="button" class="btn btn-info">Clear</button>
             <button type="button" class="btn btn-primary">Copy</button>
           </div>    
   </div>
@@ -124,6 +124,10 @@
 
         socket.emit('message',$('#dataUser').val()  );
         $('#dataUser').val('');
+        return false;
+      }); 
+      $('#clearData').click(function(){
+        $('#nodechat').html('');
         return false;
       }); 
      
