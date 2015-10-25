@@ -130,7 +130,15 @@
         $('#nodechat').html('');
         return false;
       }); 
-     
+     $("#dataUser").keyup(function(event){
+          if(event.keyCode == 13 && $('#dataUser').val() != ""){
+
+            socket.emit('message',$('#dataUser').val()  );
+            $('#dataUser').val('');
+            
+            }
+            return false;    
+      });
 
     setInterval(function () {
 
