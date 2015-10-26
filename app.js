@@ -43,24 +43,27 @@ io.on('connection', function(socket) {
               io.emit('infoUsers', results);    
 }); 
   
-  socket.on('disconnect', function() {
-    if(socket.name){
-          client.query('DELETE FROM personaje where nombre= ?',socket.name);      
-                  client.query('SELECT * FROM personaje', function (err, results, fields) { 
-                      if (err) {
-                          console.log("Error: " + err.message);
-                          throw err;
-                      }          
-            
-                      io.emit('infoUsers', results);    
-                  }); 
-    }
+socket.on('disconnect', 
+              function() {
+                    if(socket.name){
+                          client.query('DELETE FROM personaje where nombre= ?',socket.name);  
+
+                          client.query('SELECT * FROM personaje', function (err, results, fields) { 
+                                      if (err) {
+                                          console.log("Error: " + err.message);
+                                          throw err;
+                                      }          
+                            
+                                      io.emit('infoUsers', results);  
+                                      io.emit('msg',socket.name +"  Se ha ido.. ");  
+                                  }); 
+              }
 
     console.log('User disconnected');
 
   });
 
-  socket.on('message', function(message) { io.emit('msg',socket.name +" :"+ message);  });
+  socket.on('message', function(message) { io.emit('msg',socket.name +": "+ message);  });
 
 
   socket.on('name', function(data) {
