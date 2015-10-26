@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nodejs Linux</title> 
+    <title>Unichat</title> 
     <!-- CSS de Bootstrap -->
  
     <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -24,27 +24,81 @@
   
     width: 100%;
     height: 270px;
-    overflow: scroll;
+    overflow-y: scroll;
 }
     </style>
   </head>
 <body>
-<form class="form-inline">
-  <div class="form-group">
-    <label for="exampleInputName2">Nick</label>
-    <input type="text" class="form-control" id="nick" placeholder="***********">
+  <!-- menu -->
+<div id="menu">
+<nav class="navbar navbar-default" role="navigation">
+  <!-- El logotipo y el icono que despliega el menú se agrupan
+       para mostrarlos mejor en los dispositivos móviles -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse"
+            data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Desplegar navegación</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Logotipo</a>
   </div>
-  <div class="form-group">
-    <label for="exampleInputEmail2">Name</label>
-    <input type="text" class="form-control" id="name" placeholder="**********">
+ 
+  <!-- Agrupar los enlaces de navegación, los formularios y cualquier
+       otro elemento que se pueda ocultar al minimizar la barra -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">    
+    
+    </ul>
+ 
+    <form class="navbar-form navbar-left" role="search">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Buscar">
+      </div>
+      <button type="submit" class="btn btn-default">Enviar</button>
+    </form>
+ 
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#">Enlace #3</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          Menú #2 <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Acción #1</a></li>
+          <li><a href="#">Acción #2</a></li>
+          <li><a href="#">Acción #3</a></li>
+          <li class="divider"></li>
+          <li><a href="#">Acción #4</a></li>
+        </ul>
+      </li>
+    </ul>
   </div>
-  <button id="sendname"  class="btn btn-default">Log</button>
-</form>
+</nav>
+<!-- end menu -->
+  </div>
+<!-- /login -->  
+<div id="login">
+      <form class="form-inline">
+        <div class="form-group">
+          <label for="exampleInputName2">Nick</label>
+          <input type="text" class="form-control" id="nick" placeholder="***********">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputEmail2">Name</label>
+          <input type="text" class="form-control" id="name" placeholder="**********">
+        </div>
+        <button id="sendname"  class="btn btn-default">Log</button>
+      </form>
+</div>
+
 <div id="logo" class="row">
   <img src="http://images6.alphacoders.com/440/440151.jpg" alt="Unichat" class="img-thumbnail">
   </div>
 <div id="content" class="row">
   
+   <!-- /end login -->  
   </br>
 
      <!-- /.navbar-top-links -->
@@ -86,6 +140,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
   $('#content').hide();
+  $('#menu').hide();
     var socket = io(); // Inicializamos socketIO en el cliente
     /*
     *
@@ -124,7 +179,9 @@ http://192.168.0.3:3000/
                                           lastname: $('#name').val()
                                       });
                     $('#logo').hide(300);
+                    $('#login').hide(200);
                     $('#content').show(400);
+                    $('#menu').show(400);
             }
         return false;
       });  
