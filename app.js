@@ -32,23 +32,14 @@ client.query('USE test');
 
 io.on('connection', function(socket) {
   
-  console.log('New user connected');
-
- client.query('SELECT * FROM personaje', function (err, results, fields) { 
-              if (err) {
-                  console.log("Error: " + err.message);
-                  throw err;
-              }          
-    
-              io.emit('infoUsers', results);    
-}); 
+console.log('New user connected'); 
   
 socket.on('disconnect', 
               function() {
                     if(socket.name){
-                          client.query('DELETE FROM personaje where nombre= ?',socket.name);  
+                          client.query('DELETE FROM logueados where usuario= ?',socket.name);  
 
-                          client.query('SELECT * FROM personaje', function (err, results, fields) { 
+                          client.query('SELECT * FROM logueados', function (err, results, fields) { 
                                       if (err) {
                                           console.log("Error: " + err.message);
                                           throw err;
@@ -67,35 +58,34 @@ socket.on('disconnect',
 
 
   socket.on('name', function(data) {
-    client.query('SELECT * FROM personaje where nombre="'+data.name+'"', function (err, results, fields) {
+      client.query('SELECT * FROM usuarios where usuario ="'+data.user+'" and password="'+data.pass+'"',
+             function (err, results, fields) {
  
               if (err) {
                   console.log("Error: " + err.message);
                   throw err;
               }
               if(results.length > 0){
-              console.log("Usuario existe en la BD");
-            //  io.emit('message', results);
+
+              io.emit('delta response', true);  
+              socket.name = data.user;
+              console.log("Login success "+socket.name);
+              console.log("Usuario insertado en logueados ");
+              client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[results[0].id,data.user]  );
+              console.log("Actualizando logueados");
+              client.query('SELECT * FROM logueados', function selectUsuario(err, results, fields) { 
+                                                              if (err) {
+                                                                  console.log("Error: " + err.message);
+                                                                  throw err;
+                                                              }          
+                                                    
+                                                              io.emit('infoUsers', results);    
+                                                }); 
+          
               
               }else{
-
-                console.log("Nuevo usuario "+ data.name);
-                socket.name = data.name;
-
-                client.query(
-                            'INSERT INTO personaje SET nombre = ?, apellido = ?',
-                              [data.name, data.lastname]
-                );
-
-                client.query('SELECT * FROM personaje', function selectUsuario(err, results, fields) { 
-              if (err) {
-                  console.log("Error: " + err.message);
-                  throw err;
-              }          
-    
-              io.emit('infoUsers', results);    
-}); 
-                
+                    io.emit('delta response ', false);  
+                    console.log("Login error "+socket.name);  
               }              
     
       }); 

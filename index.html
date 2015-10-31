@@ -81,12 +81,12 @@
 <div id="login">
       <form class="form-inline">
         <div class="form-group">
-          <label for="exampleInputName2">Nick</label>
-          <input type="text" class="form-control" id="nick" placeholder="***********">
+          <label for="exampleInputName2">User</label>
+          <input type="text" class="form-control" id="user" placeholder="***********">
         </div>
         <div class="form-group">
-          <label for="exampleInputEmail2">Name</label>
-          <input type="text" class="form-control" id="name" placeholder="**********">
+          <label for="exampleInputEmail2">Password</label>
+          <input type="password" class="form-control" id="pass" placeholder="**********">
         </div>
         <button id="sendname"  class="btn btn-default">Log</button>
       </form>
@@ -131,6 +131,11 @@
             <button type="button" class="btn btn-primary">Copy</button>
           </div>    
   </div>
+  <div class="col-xs-2 col-md-2">
+    <kbd>Status</kbd>
+    <textarea class="form-control" rows="3"></textarea>
+    
+  </div>
 </div>
   
   
@@ -143,24 +148,15 @@
     var socket = io(); // Inicializamos socketIO en el cliente
     /*
     *
-    *@Param msg :  select tabla personajes  formato JSON
+    *@Param msg :  select tabla logueados en  formato JSON
     */
       socket.on('infoUsers', function (msg) {
-      var a=`<table class='table'>
-                <thead>
-                <tr>
-                  <th>Nick</th>
-                  <th>Name</th>        
-                </tr>
-                </thead>
-                <tbody>`;      
-      
+      var a=`<table class='table'>`;
                 for (var i = msg.length - 1; i >= 0; i--) {
-                    a += "<tr><td>"+msg[i].nombre +" </td><td> " + msg[i].apellido + "</td></tr>";
+                    a += "<tr><td>"+msg[i].usuario +" </td></tr>";
                 };
 
-          a+=`</tbody>
-              </table>`;
+          a+=`</table>`;
 
           $("#resp").html(a);
       });
@@ -169,21 +165,27 @@
             $("#nodechat").html($("#nodechat").html()+"</br>"+msg);
 
       });
-http://192.168.0.3:3000/
            $('#sendname').click(function(){
-            if($('#nick').val() != ""){
+            if($('#user').val() != ""){
 
                     socket.emit('name', {
-                                          name:     $('#nick').val()  ,
-                                          lastname: $('#name').val()
-                                      });
-                    $('#logo').hide(300);
-                    $('#login').hide(200);
-                    $('#content').show(400);
-                    $('#menu').show(400);
+                                          user : $('#user').val()  ,
+                                          pass : $('#pass').val()
+                                      });                   
+                    
             }
         return false;
-      });  
+      }); 
+      socket.on('delta response', function (isUser) {
+
+                        if(isUser){
+                                $('#logo').hide(300);
+                                $('#login').hide(200);
+                                $('#content').show(400);
+                                $('#menu').show(400);
+                        }
+
+                    }); 
 
       $('#sendData').click(function(){
 
