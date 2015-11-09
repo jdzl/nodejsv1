@@ -5,16 +5,55 @@ var http = require('http').Server(app);
 var io   = require('socket.io')(http);
 
 var path    = require("path");
+var bodyParser = require('body-parser')
+var session = require('express-session')
+
+//cookies
+app.use(bodyParser.urlencoded({ extended: false }))
+
+var sess = {
+  secret: 'keyboard cat',
+  cookie: {}
+}
+app.use(session(sess))
+function login(req,res,next){
+
+  if(typeof req.session.user != "undefined"){
+
+      next();
+  }
+    else{
+
+      res.redirect('/login');
+    }
 
 
-app.get('/',function(req,res){
-  res.sendFile(path.join(__dirname+'/index.html'));
+}
+app.post('/auth',function(req,res){
+  
+  
+  if(req.body.user == "1" && req.body.pass =="1")
+  {
+    req.session.user = req.body.user;
+    res.redirect('/in');
+    console.log(req.session.user);
+  }
+  else{
+
+    res.send("Fallido");
+  }
+
+});
+app.get('/in',login,function(req,res){
+  res.sendFile(path.join(__dirname+'/in.html'));
+  //__dirname : It will resolve to your project folder.
+});
+app.get('/login',function(req,res){
+  
+  res.sendFile(path.join(__dirname+'/login.html'));
   //__dirname : It will resolve to your project folder.
 });
 
-app.get('/about',function(req,res){
-  res.sendFile(path.join(__dirname+'/about.html'));
-});
 
 app.use(express["static"](__dirname + '/public'));
 
@@ -53,7 +92,15 @@ socket.on('disconnect',
     console.log('User disconnected');
 
   });
-
+  
+  /*
+  socket.on('message status', function(message) { 
+    `SELECT msg 
+FROM   publicaciones
+where id_us  in (SELECT la.id_amigo FROM  lista_amigos la, usuarios u where la.id_usuario = u.id and u.id=1)`;
+    //io.emit('msg',socket.name +": "+ message);  
+});
+  */
   socket.on('message', function(message) { io.emit('msg',socket.name +": "+ message);  });
 
 
@@ -73,7 +120,7 @@ socket.on('disconnect',
               console.log("Usuario insertado en logueados ");
               client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[results[0].id,data.user]  );
               console.log("Actualizando logueados");
-              client.query('SELECT * FROM logueados', function selectUsuario(err, results, fields) { 
+              client.query('SELECT * FROM logueados', function (err, results, fields) { 
                                                               if (err) {
                                                                   console.log("Error: " + err.message);
                                                                   throw err;

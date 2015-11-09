@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Unichat</title> 
+    <!-- CSS de Bootstrap --> 
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  </head>
+<body>
+<div id="login">
+      <form class="form-inline" method="POST" action="/auth">
+        <div class="form-group">
+          <label for="exampleInputName2">User</label>
+          <input type="text" class="form-control" name="user" placeholder="***********">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputEmail2">Password</label>
+          <input type="password" class="form-control" name="pass" placeholder="**********">
+        </div>
+        <button id="sendname"  class="btn btn-default">Log</button>
+      </form>
+</div>
+
+<div id="logo" class="row">
+        <img src="http://images6.alphacoders.com/440/440151.jpg" alt="Unichat" class="img-thumbnail">
+</div>
+
+
+</div>
+  
+  
+  
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io(); // Inicializamos socketIO en el cliente
+  
+      
+  </script>
+  <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>

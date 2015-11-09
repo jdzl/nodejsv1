@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Unichat</title> 
+    <!-- CSS de Bootstrap -->
+ 
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+ 
+    <!-- librerías opcionales que activan el soporte de HTML5 para IE8 -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style >
+    div.scroll {
+  
+    width: 100%;
+    height: 270px;
+    overflow-y: scroll;
+}
+    </style>
+  </head>
+<body>
+  <!-- menu -->
+<div id="menu">
+<nav class="navbar navbar-default" role="navigation">
+  <!-- El logotipo y el icono que despliega el menú se agrupan
+       para mostrarlos mejor en los dispositivos móviles -->
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse"
+            data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Desplegar navegación</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="#">Unichat</a>
+  </div>
+ 
+  <!-- Agrupar los enlaces de navegación, los formularios y cualquier
+       otro elemento que se pueda ocultar al minimizar la barra -->
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">    
+    
+    </ul>
+ 
+    <form class="navbar-form navbar-left" role="search">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search">
+      </div>
+      <button type="submit" class="btn btn-default">Send</button>
+    </form>
+ 
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="#">Home</a></li>
+      <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+         Personal <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+          <li><a href="#">Settings</a></li>          
+          <li><a href="#">Help</a></li>
+          <li class="divider"></li>
+          <li><a href="#">Log out</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+<!-- end menu -->
+  </div>
+
+<div  class="row ">
+  <div class="col-xs-2 col-md-offset-5">
+    <kbd>what are you thinking?</kbd>
+    <textarea id="msg_status" class="form-control" rows="3"></textarea>
+    
+  </div>
+</div>
+
+<div id="content" class="row">
+  
+   <!-- /end login -->  
+  </br>
+
+     <!-- /.navbar-top-links -->
+<div class="col-xs-2 col-md-2">
+            <div class="panel panel-primary">
+ 
+  <div class="panel-heading"><span class="glyphicon glyphicon-user"></span> Users </div>
+  <div class="panel-body">    
+    <div id="resp"></div>      
+  </div>   
+     
+</div>
+</div>
+  <div class="col-xs-12 col-md-8">
+            <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><span class="glyphicon glyphicon-th-list"></span> On</h3>
+            </div>
+            <div id="nodechat"class="panel-body scroll">
+              
+            </div>
+          </div>  
+<div class="input-group input-group-lg">
+  <span class="input-group-addon" id="sizing-addon1"> <span class="glyphicon glyphicon-tint"></span></span>
+  <input id="dataUser" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
+</div>
+
+          <div class="btn-group" role="group" aria-label="...">
+            <button id="sendData" type="button" class="btn btn-success">Send </button>
+            <button id="clearData" type="button" class="btn btn-info">Clear</button>
+            <button type="button" class="btn btn-primary">Copy</button>
+          </div>    
+  </div>
+  <div class="col-xs-2 col-md-2">
+    <kbd>Events</kbd>
+    <div id="msg_events"></div>
+    
+  </div>
+</div>
+  
+  
+  
+  <script src="http://code.jquery.com/jquery.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+ 
+    var socket = io(); // Inicializamos socketIO en el cliente
+    /*
+    *
+    *@Param msg :  select tabla logueados en  formato JSON
+    */
+    socket.on('infoUsers', function (msg) {
+      var a=`<table class='table'>`;
+                for (var i = msg.length - 1; i >= 0; i--) {
+                    a += "<tr><td>"+msg[i].usuario +" </td></tr>";
+                };
+
+          a+=`</table>`;
+
+          $("#resp").html(a);
+      });
+      socket.on('msg', function (msg) {
+
+            $("#nodechat").html($("#nodechat").html()+"</br>"+msg);
+
+      });
+           $('#sendname').click(function(){
+            if($('#user').val() != ""){
+
+                    socket.emit('name', {
+                                          user : $('#user').val()  ,
+                                          pass : $('#pass').val()
+                                      });                   
+                    
+            }
+        return false;
+      }); 
+      socket.on('delta response', function (isUser) {
+
+                        if(isUser){
+                                $('#logo').hide(300);
+                                $('#login').hide(200);
+                                $('#content').show(400);
+                                $('#menu').show(400);
+                        }
+
+                    }); 
+
+      $('#sendData').click(function(){
+
+        socket.emit('message',$('#dataUser').val()  );
+        $('#dataUser').val('');
+        return false;
+      }); 
+      $('#clearData').click(function(){
+        $('#nodechat').html('');
+        return false;
+      }); 
+     $("#dataUser").keyup(function(event){
+          if(event.keyCode == 13 && $('#dataUser').val() != ""){
+
+            socket.emit('message',$('#dataUser').val()  );
+            $('#dataUser').val('');
+            
+            }
+            return false;    
+      });
+     $("#msg_status").keyup(function(event){
+          if(event.keyCode == 13 && $('#msg_status').val() != ""){
+
+            socket.emit('message status',$('#msg_status').val()  );
+            $('#msg_status').val('');
+            
+            }
+            return false;    
+      });
+     
+      
+  </script>
+  <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
