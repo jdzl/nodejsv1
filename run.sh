@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# J. Dvd Zl
 echo "Running"
 echo "Add all files"
 git add .

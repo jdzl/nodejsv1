@@ -45,8 +45,12 @@ app.post('/auth',function(req,res){
 
 });
 app.get('/in',login,function(req,res){
-  res.sendFile(path.join(__dirname+'/in.html'));
-  //__dirname : It will resolve to your project folder.
+  res.sendFile(path.join(__dirname+'/in.html'));  
+});
+app.get('/out',login,function(req,res){
+  delete req.session.user;
+  res.redirect('/login');
+
 });
 app.get('/login',function(req,res){
   
