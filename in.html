@@ -134,8 +134,9 @@
   <script src="http://code.jquery.com/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
- 
+    
     var socket = io(); // Inicializamos socketIO en el cliente
+     socket.emit('name', localStorage.getItem("user"));
     /*
     *
     *@Param msg :  select tabla logueados en  formato JSON
@@ -153,30 +154,11 @@
       socket.on('msg', function (msg) {
 
             $("#nodechat").html($("#nodechat").html()+"</br>"+msg);
+            $("#nodechat").animate({scrollTop : $("#nodechat").height()},800 );
+
 
       });
-           $('#sendname').click(function(){
-            if($('#user').val() != ""){
-
-                    socket.emit('name', {
-                                          user : $('#user').val()  ,
-                                          pass : $('#pass').val()
-                                      });                   
-                    
-            }
-        return false;
-      }); 
-      socket.on('delta response', function (isUser) {
-
-                        if(isUser){
-                                $('#logo').hide(300);
-                                $('#login').hide(200);
-                                $('#content').show(400);
-                                $('#menu').show(400);
-                        }
-
-                    }); 
-
+      
       $('#sendData').click(function(){
 
         socket.emit('message',$('#dataUser').val()  );
