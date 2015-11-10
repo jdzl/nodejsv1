@@ -22,7 +22,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 var sess = {
   secret: 'keyboard cat',
-  cookie: {}
+  cookie: {maxAge: 60000}  , 
+  resave: true, 
+  saveUninitialized: true 
 }
 app.use(session(sess))
 
@@ -89,11 +91,9 @@ app.get('/login',overrideLogin,function(req,res){
 app.get('/',function(req,res){
   
   res.sendFile(path.join(__dirname+'/login.html'));
-  //__dirname : It will resolve to your project folder.
 });
 
 app.use(express["static"](__dirname + '/public'));
-
 
 
 //  Sockets 
@@ -122,14 +122,6 @@ socket.on('disconnect',function() {
 
   });
   
-  /*
-  socket.on('message status', function(message) { 
-    `SELECT msg 
-FROM   publicaciones
-where id_us  in (SELECT la.id_amigo FROM  lista_amigos la, usuarios u where la.id_usuario = u.id and u.id=1)`;
-    //io.emit('msg',socket.name +": "+ message);  
-});
-  */
   socket.on('message', function(message) { io.emit('msg',socket.name +": "+ message);  });
 
 
@@ -144,7 +136,6 @@ where id_us  in (SELECT la.id_amigo FROM  lista_amigos la, usuarios u where la.i
               }
               if(results.length > 0){
               
-              //socket.name = data.user;
               socket.name  = data;
               console.log("Login success "+socket.name);
               console.log("Usuario insertado en logueados ");
@@ -170,6 +161,7 @@ where id_us  in (SELECT la.id_amigo FROM  lista_amigos la, usuarios u where la.i
 
 
 http.listen(3000, function() {
+  console.log('Running Server...');
   console.log('listening on *:3000');
 });
 
