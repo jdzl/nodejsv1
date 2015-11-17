@@ -1,5 +1,5 @@
 create database test;
-
+use test;
 CREATE TABLE personaje(
    personaje_id smallint(5) unsigned not null auto_increment primary key,
    nombre varchar(50) not null,
@@ -31,9 +31,11 @@ CREATE TABLE publicaciones (
   PRIMARY KEY  (id),
   FOREIGN KEY  (id_us) REFERENCES usuarios(id)
 );
+/*
 SELECT msg 
 FROM   publicaciones
 where id_us  in (SELECT la.id_amigo FROM  lista_amigos la, usuarios u where la.id_usuario = u.id and u.id=1);
 
 
 SELECT id_friend FROM friend_list fl, user u where fl.id = u.id
+*/

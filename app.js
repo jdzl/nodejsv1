@@ -15,7 +15,6 @@ var client = mysql.createConnection({
   password: ''
 });
 client.query('USE test');
-var overrideName;
 
 //cookies
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -51,10 +50,9 @@ app.post('/auth',function(req,res){
                   throw err;
               }
               if(results.length > 0){
-                req.session.user = req.body.user;
-                overrideName = req.body.user;
+                req.session.user = req.body.user;                
                 res.redirect('/in');
-                console.log(req.session.user);            
+                console.log("user bodyParser->>"+req.session.user);            
               }else{
                     res.send("Fallido");
               }
@@ -65,9 +63,9 @@ app.post('/auth',function(req,res){
 app.get('/in',login,function(req,res){
   res.sendFile(path.join(__dirname+'/in.html'));  
 });
-app.get('/out',login,function(req,res){
+app.get('/out',function(req,res){
   delete req.session.user;
-  res.redirect('/');
+  res.redirect('/login');
 
 });
 function overrideLogin(req,res,next){
@@ -77,8 +75,7 @@ function overrideLogin(req,res,next){
     res.redirect('/in');
   }
     else{
-      res.redirect('/login');
-      
+    next();      
     }
 
 }
@@ -88,10 +85,6 @@ app.get('/login',overrideLogin,function(req,res){
   //__dirname : It will resolve to your project folder.
 });
 
-app.get('/',function(req,res){
-  
-  res.sendFile(path.join(__dirname+'/login.html'));
-});
 
 app.use(express["static"](__dirname + '/public'));
 
@@ -102,9 +95,7 @@ io.on('connection', function(socket) {
   
 console.log('New user connected'); 
   
-socket.on('disconnect',function() {
-
-                      if(socket.name){
+socket.on('disconnect',function() { if(socket.name){
                           client.query('DELETE FROM logueados where usuario= ?',socket.name);  
 
                           client.query('SELECT * FROM logueados', function (err, results, fields) { 
@@ -126,7 +117,7 @@ socket.on('disconnect',function() {
 
 
   socket.on('name', function(data) {
-      console.log("--------> "+data);
+      console.log("---+-----> "+data);
       client.query('SELECT * FROM usuarios where usuario ="'+data+'"',
              function (err, results, fields) {
  
@@ -138,8 +129,13 @@ socket.on('disconnect',function() {
               
               socket.name  = data;
               console.log("Login success "+socket.name);
-              console.log("Usuario insertado en logueados ");
-              client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[results[0].id,data]  );
+
+              client.query('SELECT * FROM logueados where usuario ="'+data+'"',function (e,r,f) { 
+                                      if(r.length == 0){ 
+                                        client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[results[0].id,data]  );
+                                        console.log("Usuario insertado en logueados ");
+                                      } });             
+              
               console.log("Actualizando logueados");
               client.query('SELECT * FROM logueados', function (err, results, fields) { 
                                                               if (err) {
@@ -164,17 +160,3 @@ http.listen(3000, function() {
   console.log('Running Server...');
   console.log('listening on *:3000');
 });
-
-//client.end();
-/*
-int j=0;
-button = false;
-while(true){  
-            if(!button){
-                cout<< j;
-            }else{
-                cout<< j;   
-                j++;
-            }
-}
-*/
