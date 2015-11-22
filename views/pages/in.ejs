@@ -1,24 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Unichat</title> 
-    <!-- CSS de Bootstrap -->
- 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
- 
-    <!-- librerías opcionales que activan el soporte de HTML5 para IE8 -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <% include ../partials/head %>
+   
     <style >
     div.scroll {
   
@@ -63,13 +48,13 @@
       <li><a href="#">Home</a></li>
       <li class="dropdown">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-         Personal <b class="caret"></b>
+         <p> <% if(user){ %><%= user %><% } %> </p> <b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
           <li><a href="#">Settings</a></li>          
           <li><a href="#">Help</a></li>
           <li class="divider"></li>
-          <li><a href="/out">Log out</a></li>
+          <li><a onclick="sessionClose" href="/out">Log out</a></li>
         </ul>
       </li>
     </ul>
@@ -136,12 +121,17 @@
   <script>
     
     var socket = io(); // Inicializamos socketIO en el cliente
-     socket.emit('name', localStorage.getItem("user"));
-   
+    socket.emit('name', localStorage.getItem("user"));
+    
+function sessionClose(){  
+      localStorage.removeItem("user");      
+}
     /*
     *
     *@Param msg :  select tabla logueados en  formato JSON
     */
+    socket.on('clearuser', function (m) { });
+
     socket.on('infoUsers', function (msg) {
       var a=`<table class='table'>`;
                 for (var i = msg.length - 1; i >= 0; i--) {

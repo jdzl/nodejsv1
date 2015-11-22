@@ -1,13 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Unichat</title> 
-    <!-- CSS de Bootstrap --> 
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <% include ../partials/head %>
   </head>
 <body>
 <div class="container">    
@@ -153,11 +148,12 @@
   <script>
     //var socket = io(); // Inicializamos socketIO en el cliente  
  
+ 
     $('#loginform').submit(function(){
                  
               if (typeof(Storage) !== "undefined") {
                   // Store
-                  localStorage.setItem("user", $('#login-user').val());                 
+                localStorage.setItem("user", $('#login-user').val());  
               }               
     });
        

@@ -9,6 +9,9 @@ var bodyParser = require('body-parser')
 var session = require('express-session')
 
 var mysql = require('mysql'); 
+
+
+
 var client = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
@@ -16,6 +19,7 @@ var client = mysql.createConnection({
 });
 client.query('USE test');
 
+app.set('view engine', 'ejs');
 //cookies
 app.use(bodyParser.urlencoded({ extended: false }))
 
@@ -29,12 +33,10 @@ app.use(session(sess))
 
 function login(req,res,next){
 
-  if(typeof req.session.user != "undefined"){
-
-      next();
+  if(typeof req.session.user != "undefined"){   
+        next();
   }
-    else{
-
+    else{    
       res.redirect('/login');
     }
 
@@ -51,17 +53,20 @@ app.post('/auth',function(req,res){
               }
               if(results.length > 0){
                 req.session.user = req.body.user;                
-                res.redirect('/in');
-                console.log("user bodyParser->>"+req.session.user);            
+                res.render('pages/in', {
+                                       user : req.body.user
+                                        });  
+                
+
               }else{
-                    res.send("Fallido");
+                    res.send("      ---->      Fallido");
               }
   });
 
 
 });
 app.get('/in',login,function(req,res){
-  res.sendFile(path.join(__dirname+'/in.html'));  
+  res.render('pages/in');  
 });
 app.get('/out',function(req,res){
   delete req.session.user;
@@ -81,7 +86,7 @@ function overrideLogin(req,res,next){
 }
 app.get('/login',overrideLogin,function(req,res){
   
-  res.sendFile(path.join(__dirname+'/login.html'));
+  res.render('pages/login');
   //__dirname : It will resolve to your project folder.
 });
 
@@ -137,13 +142,13 @@ socket.on('disconnect',function() { if(socket.name){
                                       } });             
               
               console.log("Actualizando logueados");
-              client.query('SELECT * FROM logueados', function (err, results, fields) { 
+              client.query('SELECT * FROM logueados', function (err, resp, fields) { 
                                                               if (err) {
                                                                   console.log("Error: " + err.message);
                                                                   throw err;
                                                               }          
                                                     
-                                                              io.emit('infoUsers', results);    
+                                                              io.emit('infoUsers', resp);    
                                                 }); 
           
               
@@ -156,7 +161,7 @@ socket.on('disconnect',function() { if(socket.name){
 });
 
 
-http.listen(3000, function() {
+http.listen(8080, function() {
   console.log('Running Server...');
-  console.log('listening on *:3000');
+  console.log('listening on *:8080');
 });
