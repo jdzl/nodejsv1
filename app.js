@@ -53,10 +53,9 @@ app.post('/auth',function(req,res){
                   throw err;
               }
               if(results.length > 0){
-                req.session.user = req.body.user;                
-                res.render('pages/in', {
-                                       user : req.body.user
-                                        });  
+                req.session.user = req.body.user; 
+                req.session.id_us = results[0].id;
+                res.redirect('/in');
                 
 
               }else{
@@ -80,14 +79,29 @@ client.query("SELECT msg ,u.usuario  as user \
               if (err) {
                   console.log("Error: " + err.message);
                   throw err;
-              }
-              console.log(r);
-              
-     
-
+              }    
+    client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',function (e,r,f) { 
+                                      if(r.length == 0){ 
+                                        client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[req.session.id_us,req.session.user]  );
+                                        console.log("Usuario insertado en logueados ");
+                                      } });  
+              client.query('SELECT * FROM logueados', function (err, resp, fields) { 
+                                                              if (err) {
+                                                                  console.log("Error: " + err.message);
+                                                                  throw err;
+                                                              }          
+                                                    
+              console.log("Consulta logueados primera");                                               
+              console.log(resp.length);                                                                           
+              console.log(resp);                                               
               res.render('pages/in',{ user: req.session.user, 
-                                      msgs : r 
+                                      msgs : r ,
+                                      users : resp
                                     } );  
+                                                
+              }); 
+
+
   });
 
   
@@ -96,6 +110,14 @@ client.query("SELECT msg ,u.usuario  as user \
 app.get('/out',function(req,res){
   delete req.session.user;
   res.redirect('/login');
+
+});
+
+app.post('/msg/insert',function(req,res){
+  console.log("Message Ajax DATA ");  
+  
+  client.query('INSERT INTO publicaciones SET id = ?,id_us = ?,  msg = ?',['',req.session.id_us,req.body.msg]  );
+  res.redirect('/in');
 
 });
 function overrideLogin(req,res,next){
@@ -124,6 +146,8 @@ app.use(express["static"](__dirname + '/public'));
 io.on('connection', function(socket) {
   
 console.log('New user connected'); 
+
+
   
 socket.on('disconnect',function() { if(socket.name){
                           client.query('DELETE FROM logueados where usuario= ?',socket.name);  
@@ -191,3 +215,17 @@ http.listen(8080, function() {
   console.log('Running Server...');
   console.log('listening on *:8080');
 });
+
+function allLog(){
+
+      client.query('SELECT * FROM logueados', function (err, resp, fields) { 
+                                                                  if (err) {
+                                                                      console.log("Error: " + err.message);
+                                                                      throw err;
+                                                                  }          
+                                              
+                  return resp;
+                                                    
+      }); 
+
+}
