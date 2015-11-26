@@ -68,9 +68,9 @@ app.post('/auth',function(req,res){
 });
 app.get('/in',login,function(req,res){
 
-client.query("SELECT msg   \
-              FROM   publicaciones \
-              where id_us  in (SELECT la.id_amigo \
+client.query("SELECT msg ,u.usuario  as user \
+              FROM   publicaciones, usuarios u \
+              where id_us=u.id and id_us  in (SELECT la.id_amigo \
                                FROM  lista_amigos la, usuarios u \
                                where la.id_usuario = u.id and u.id= (SELECT id \
                                                        FROM usuarios \
