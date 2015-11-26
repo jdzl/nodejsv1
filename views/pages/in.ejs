@@ -73,13 +73,12 @@
   </br>
 
      <!-- /.navbar-top-links -->
-<div class="col-xs-2 col-md-2">
-            <div class="panel panel-primary">
- 
-  <div class="panel-heading"><span class="glyphicon glyphicon-user"></span> Users </div>
-  <div class="panel-body">    
-    <div id="resp"></div>      
-  </div>   
+<div class="col-xs-2">
+  <div class="panel panel-primary">           
+            <div class="panel-heading"><span class="glyphicon glyphicon-user"></span> Users </div>
+            <div class="panel-body">    
+                 <div id="resp"></div>      
+            </div>   
      
 </div>
 </div>
@@ -100,13 +99,19 @@
 
           <div class="btn-group" role="group" aria-label="...">
             <button id="sendData" type="button" class="btn btn-success">Send </button>
-            <button id="clearData" type="button" class="btn btn-info">Clear</button>
-            <button type="button" class="btn btn-primary">Copy</button>
+            <button id="clearData" type="button" class="btn btn-info">Clear</button>        
           </div>    
   </div>
-  <div class="col-xs-2 col-md-2">
-    Main
+  <div class="col-xs-4">  
     <div id="msg_events"></div>
+    <h2>Loop</h2>
+    <ul>
+      <% msgs.forEach(function(msg) { %>
+        <li> - <%= msg.msg %>  %></li>
+    <% }); %>
+        
+             
+    </ul>
     
   </div>
 </div>

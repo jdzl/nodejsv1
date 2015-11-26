@@ -36,6 +36,11 @@ SELECT msg
 FROM   publicaciones
 where id_us  in (SELECT la.id_amigo FROM  lista_amigos la, usuarios u where la.id_usuario = u.id and u.id=1);
 
-
-SELECT id_friend FROM friend_list fl, user u where fl.id = u.id
+SELECT msg   
+              FROM   publicaciones 
+              where id_us  in (SELECT la.id_amigo 
+                               FROM  lista_amigos la, usuarios u 
+                               where la.id_usuario = u.id and u.id= (SELECT id 
+                                                       FROM usuarios 
+                                                       WHERE usuario ='native'))
 */

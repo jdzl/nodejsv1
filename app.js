@@ -67,8 +67,32 @@ app.post('/auth',function(req,res){
 
 });
 app.get('/in',login,function(req,res){
-  res.render('pages/in',{user: req.session.user});  
+
+client.query("SELECT msg   \
+              FROM   publicaciones \
+              where id_us  in (SELECT la.id_amigo \
+                               FROM  lista_amigos la, usuarios u \
+                               where la.id_usuario = u.id and u.id= (SELECT id \
+                                                       FROM usuarios \
+                                                       WHERE usuario ='"+req.session.user+"'))",function (err, r, f) {
+ 
+
+              if (err) {
+                  console.log("Error: " + err.message);
+                  throw err;
+              }
+              console.log(r);
+              
+     
+
+              res.render('pages/in',{ user: req.session.user, 
+                                      msgs : r 
+                                    } );  
+  });
+
+  
 });
+
 app.get('/out',function(req,res){
   delete req.session.user;
   res.redirect('/login');
@@ -123,7 +147,7 @@ socket.on('disconnect',function() { if(socket.name){
 
 
   socket.on('name', function(data) {
-      console.log("---+-----> "+data);
+      console.log(" Envio nombre----> "+data);
       client.query('SELECT * FROM usuarios where usuario ="'+data+'"',
              function (err, results, fields) {
  
