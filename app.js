@@ -42,6 +42,7 @@ function login(req,res,next){
 
 
 }
+app.get('/auth',function(req,res){ res.redirect('/in');});
 app.post('/auth',function(req,res){
   
   client.query('SELECT * FROM usuarios where usuario ="'+req.body.user+'" and password="'+req.body.pass+'"',
@@ -66,7 +67,7 @@ app.post('/auth',function(req,res){
 
 });
 app.get('/in',login,function(req,res){
-  res.render('pages/in');  
+  res.render('pages/in',{user: req.session.user});  
 });
 app.get('/out',function(req,res){
   delete req.session.user;
@@ -77,7 +78,7 @@ function overrideLogin(req,res,next){
 
   if(typeof req.session.user != "undefined"){
 
-    res.redirect('/in');
+    res.redirect('/in',{user: req.session.user});
   }
     else{
     next();      
@@ -141,14 +142,15 @@ socket.on('disconnect',function() { if(socket.name){
                                         console.log("Usuario insertado en logueados ");
                                       } });             
               
-              console.log("Actualizando logueados");
+
               client.query('SELECT * FROM logueados', function (err, resp, fields) { 
                                                               if (err) {
                                                                   console.log("Error: " + err.message);
                                                                   throw err;
                                                               }          
                                                     
-                                                              io.emit('infoUsers', resp);    
+                                                    console.log("Actualizando logueados");
+                                                    io.emit('infoUsers', resp);    
                                                 }); 
           
               
