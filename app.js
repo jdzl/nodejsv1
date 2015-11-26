@@ -60,8 +60,10 @@ app.post('/auth',function(req,res){
                 
 
               }else{
+                 
                   
-                    res.render('pages/login',{msg: "Error en usuario o contraseña"});
+                  var html_msg = '<div class="alert alert-warning"> Error en usuario o contraseña</div> ';
+                    res.render('pages/login',{msg: html_msg});
               }
   });
 
@@ -109,7 +111,8 @@ client.query("SELECT p.msg as msg ,u.usuario  as user \
 
 app.get('/out',function(req,res){
   delete req.session.user;  
-  res.render('pages/login',{msg: "Session Cerrada"});
+  var html_msg = '<div class="alert alert-warning">Session Cerrada</div> ';
+  res.render('pages/login',{msg: html_msg});
 });
 
 app.post('/msg/insert',function(req,res){
