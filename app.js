@@ -60,7 +60,7 @@ app.post('/auth',function(req,res){
                 
 
               }else{
-                  //  res.send("      ---->      Fallido");
+                  
                     res.render('pages/login',{msg: "Error en usuario o contraseña"});
               }
   });
@@ -69,13 +69,13 @@ app.post('/auth',function(req,res){
 });
 app.get('/in',login,function(req,res){
 
-client.query("SELECT msg ,u.usuario  as user \
-              FROM   publicaciones, usuarios u \
+client.query("SELECT p.msg as msg ,u.usuario  as user \
+              FROM   publicaciones p, usuarios u \
               where id_us=u.id and id_us  in (SELECT la.id_amigo \
                                FROM  lista_amigos la, usuarios u \
                                where la.id_usuario = u.id and u.id= (SELECT id \
                                                        FROM usuarios \
-                                                       WHERE usuario ='"+req.session.user+"'))",function (err, r, f) {
+                                                       WHERE usuario ='"+req.session.user+"')) ORDER BY p.id desc",function (err, r, f) {
  
 
               if (err) {
@@ -93,9 +93,7 @@ client.query("SELECT msg ,u.usuario  as user \
                                                                   throw err;
                                                               }          
                                                     
-              console.log("Consulta logueados primera");                                               
-              console.log(resp.length);                                                                           
-              console.log(resp);                                               
+                                                           
               res.render('pages/in',{ user: req.session.user, 
                                       msgs : r ,
                                       users : resp
@@ -110,8 +108,7 @@ client.query("SELECT msg ,u.usuario  as user \
 });
 
 app.get('/out',function(req,res){
-  delete req.session.user;
-  //res.redirect('/login',{msg : "Session Cerrada"});
+  delete req.session.user;  
   res.render('pages/login',{msg: "Session Cerrada"});
 });
 

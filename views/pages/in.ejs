@@ -63,7 +63,7 @@
     <textarea id="msg_status" class="form-control" rows="1"></textarea>
     <p class="glyphicon glyphicon-camera"></p> 
     <p class="glyphicon glyphicon-link"></p>
-    <button id="send_estatus" style="float:right"class="btn btn-primary">Post</button>
+    <button id="send_status" style="float:right"class="btn btn-primary">Post</button>
   </div>
 </div>
 
@@ -89,7 +89,7 @@
      
 </div>
 </div>
-  <div class="col-xs-3" style="position: fixed; bottom: 0px; right: -0px; background-color: transparent; z-index: 10000; float: right;">
+  <div class="col-xs-3" style="position: fixed; bottom: -17px; right: -0px; background-color: transparent; z-index: 10000; float: right;">
             <div class="panel panel-default">
             <div onclick ="$('#nodechat').toggle()" class="panel-heading">
               <h3 class="panel-title"><span class="glyphicon glyphicon-th-list"></span> On</h3>
@@ -98,16 +98,13 @@
               
             </div>
             <div class="input-group input-group-lg">
-  <span class="input-group-addon" id="sizing-addon1"> <span class="glyphicon glyphicon-tint"></span></span>
-  <input id="dataUser" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
-</div>
+                <span class="input-group-addon" id="sizing-addon1"> <span class="glyphicon glyphicon-tint"></span></span>
+                <input id="dataUser" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
+          </div>
           </div>  
 
 
-          <div class="btn-group" role="group" aria-label="...">
-            <button id="sendData" type="button" class="btn btn-success">Send </button>
-            <button id="clearData" type="button" class="btn btn-info">Clear</button>        
-          </div>    
+            
   </div>
   <div class="col-xs-6">  
     <div id="msg_events"></div>
@@ -139,18 +136,19 @@
         $(this).attr('rows', '3');
     });
 
-    $('#send_estatus').click(function(){          
+    $('#send_status').click(function(){          
+  
+       if($('#msg_status').val() != ''){      
        
-       if($('#send_estatus').val() != ''){       
                     $.ajax({
                       method: "POST",
                       url: "/msg/insert",
                       data: { name: localStorage.getItem("user") , msg: $('#msg_status').val() }
                     })
                       .done(function( msg ) {
-                        alert( "Data Saved "  );
-                        $('#msg_estatus').val('');
-                        $('#msg_estatus').attr('rows', '1');
+                        
+                        $('#msg_status').val('');
+                        $('#msg_status').attr('rows', '1');
                       });                      
     }
 
