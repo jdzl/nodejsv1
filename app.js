@@ -56,10 +56,12 @@ app.post('/auth',function(req,res){
                 req.session.user = req.body.user; 
                 req.session.id_us = results[0].id;
                 res.redirect('/in');
+
                 
 
               }else{
-                    res.send("      ---->      Fallido");
+                  //  res.send("      ---->      Fallido");
+                    res.render('pages/login',{msg: "Error en usuario o contraseña"});
               }
   });
 
@@ -109,8 +111,8 @@ client.query("SELECT msg ,u.usuario  as user \
 
 app.get('/out',function(req,res){
   delete req.session.user;
-  res.redirect('/login');
-
+  //res.redirect('/login',{msg : "Session Cerrada"});
+  res.render('pages/login',{msg: "Session Cerrada"});
 });
 
 app.post('/msg/insert',function(req,res){
@@ -124,7 +126,7 @@ function overrideLogin(req,res,next){
 
   if(typeof req.session.user != "undefined"){
 
-    res.redirect('/in',{user: req.session.user});
+    res.redirect('/in');
   }
     else{
     next();      
@@ -133,7 +135,7 @@ function overrideLogin(req,res,next){
 }
 app.get('/login',overrideLogin,function(req,res){
   
-  res.render('pages/login');
+  res.render('pages/login',{msg: ""});
   //__dirname : It will resolve to your project folder.
 });
 
