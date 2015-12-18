@@ -127,15 +127,14 @@ app.post('/users/search',function(req,res){
   
   client.query('SELECT * FROM usuarios where usuario like "%'+req.body.data+'%" limit 6' , function (err, resp, fields) {
                                                             
-  //resp      
-    console.log(resp);
+
     var html = '<div class="list-group">';
     for (var i = resp.length - 1; i >= 0; i--) {
 
       html+= " <a href='#' class='list-group-item'>"+resp[i].usuario+ "<span class='badge'>"+resp[i].id+" </span> </a> ";
     };
     html +="</div>";
-    res.send(html);
+    res.send(resp.length >0 ? html : "No lo hemos encotrado.. :(");
 
           }
   );

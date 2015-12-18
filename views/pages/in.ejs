@@ -138,10 +138,12 @@
   $('#complete_search').hide();
 
    $('#search').keyup(function(){  
-        
 
         if($('#search').val().length > 1){
+          
 
+        $('#complete_search').show(1000);
+        $('#complete_search').html("<img src='img/loading.gif'>");
 
                     $.ajax({
                       method: "POST",
@@ -149,8 +151,8 @@
                       data: { data: $('#search').val() }
                     })
                       .done(function( msg ) {
-                        $('#complete_search').show(1000);
-                        $('#complete_search').html("<br/>"+msg);
+                        
+                        $('#complete_search').html(msg);
 
                       });                        
 
