@@ -116,10 +116,31 @@ app.get('/out',function(req,res){
 });
 
 app.post('/msg/insert',function(req,res){
-  console.log("Message Ajax DATA ");  
+  console.log("Message Ajax DATA  Insert");  
   
   client.query('INSERT INTO publicaciones SET id = ?,id_us = ?,  msg = ?',['',req.session.id_us,req.body.msg]  );
   res.redirect('/in');
+
+});
+app.post('/users/search',function(req,res){
+  console.log("Message Ajax DATA  search");  
+  
+  client.query('SELECT * FROM usuarios where usuario like "%'+req.body.data+'%" limit 6' , function (err, resp, fields) {
+                                                            
+  //resp      
+    console.log(resp);
+    var html = '<div class="list-group">';
+    for (var i = resp.length - 1; i >= 0; i--) {
+
+      html+= " <a href='#' class='list-group-item'>"+resp[i].usuario+ "<span class='badge'>"+resp[i].id+" </span> </a> ";
+    };
+    html +="</div>";
+    res.send(html);
+
+          }
+  );
+  
+
 
 });
 function overrideLogin(req,res,next){

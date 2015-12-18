@@ -31,6 +31,13 @@ CREATE TABLE publicaciones (
   PRIMARY KEY  (id),
   FOREIGN KEY  (id_us) REFERENCES usuarios(id)
 );
+
+INSERT INTO usuarios VALUES ('','native','had');
+INSERT INTO usuarios VALUES ('','mortum','had');
+INSERT INTO usuarios VALUES ('','mortum2','had');
+INSERT INTO usuarios VALUES ('','admin','had');
+INSERT INTO usuarios VALUES ('','hans','had');
+
 /*
 SELECT msg 
 FROM   publicaciones

@@ -34,8 +34,11 @@
  
     <form class="navbar-form navbar-left" role="search">
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Search">
-      </div>      
+        <input id="search" type="text" class="form-control" placeholder="Search">
+         <div id="complete_search" style="position: absolute; background:white; border:12px; width:20%">   
+        </div>
+      </div>  
+     
     </form>
  
     <ul class="nav navbar-nav navbar-right">
@@ -132,6 +135,32 @@
   <script src="http://code.jquery.com/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
+  $('#complete_search').hide();
+
+   $('#search').keyup(function(){  
+        
+
+        if($('#search').val().length > 1){
+
+
+                    $.ajax({
+                      method: "POST",
+                      url: "/users/search",
+                      data: { data: $('#search').val() }
+                    })
+                      .done(function( msg ) {
+                        $('#complete_search').show(1000);
+                        $('#complete_search').html("<br/>"+msg);
+
+                      });                        
+
+        }
+        if($('#search').val().length <=1){
+                        $('#complete_search').hide();
+
+        }
+
+    });
     $('#msg_status').click(function(){  
         $(this).attr('rows', '3');
     });
