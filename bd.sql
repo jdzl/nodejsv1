@@ -8,6 +8,7 @@ CREATE TABLE personaje(
 );
 CREATE TABLE logueados (
   id INT(11) NOT NULL ,
+  id_session VARCHAR(50) NOT NULL,
   usuario VARCHAR(20) NOT NULL,  
   PRIMARY KEY  (id)
 );

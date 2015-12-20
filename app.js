@@ -86,7 +86,7 @@ client.query("SELECT p.msg as msg ,u.usuario  as user \
               }    
     client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',function (e,r,f) { 
                                       if(r.length == 0){ 
-                                        client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[req.session.id_us,req.session.user]  );
+              client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[req.session.id_us,req.session.user]  );
                                         console.log("Usuario insertado en logueados ");
                                       } });  
               client.query('SELECT * FROM logueados', function (err, resp, fields) { 
@@ -95,7 +95,7 @@ client.query("SELECT p.msg as msg ,u.usuario  as user \
                                                                   throw err;
                                                               }          
                                                     
-                                                           
+                                                       
               res.render('pages/in',{ user: req.session.user, 
                                       msgs : r ,
                                       users : resp
@@ -142,6 +142,54 @@ app.post('/users/search',function(req,res){
 
 
 });
+/*
+app.get('/users/add/:name',function(req,res){
+
+res.send("<img src='../../img/loading.gif'> <br/> Ooops  en construccion "+req.param('name'));
+});
+*/
+app.get('/users/add',function(req,res){
+
+  var query = require('url').parse(req.url,true).query;
+    var user = query.user;
+    var email = query.email;
+    var fname = query.firstname;
+    var lname = query.lastname;
+    var pwd = query.passwd;
+
+res.send("<img src='../../img/loading.gif'> <br/> Sus Datos son : <br/> "+
+    user +" <br/>" +
+    email +" <br/>" +
+    fname +" <br/>" +
+    lname +" <br/>" +
+    pwd +" <br/>" 
+  );
+});
+app.get('/users/del',function(req,res){
+    var query = require('url').parse(req.url,true).query;
+    var id = query.id;
+    var option = query.option;
+
+res.send(option+" <img src='../img/loading.gif'> <br/> Ooops  en construccion "+id);
+
+});
+app.get('/users/*',function(req,res){
+
+  res.send("<img src='../img/loading.gif'> <br/>Ooops route  failure :D");
+
+});
+/*
+var query = require('url').parse(req.url,true).query;
+Then you can just call
+
+var id = query.id;
+var option = query.option;
+
+where the URL for get should be
+
+/path/filename?id=123&option=456
+*/
+
 function overrideLogin(req,res,next){
 
   if(typeof req.session.user != "undefined"){
@@ -168,6 +216,7 @@ app.use(express["static"](__dirname + '/public'));
 io.on('connection', function(socket) {
   
 console.log('New user connected'); 
+console.log('Id user'+socket.id); 
 
 
   
@@ -189,7 +238,20 @@ socket.on('disconnect',function() { if(socket.name){
 
   });
   
-  socket.on('message', function(message) { io.emit('msg',socket.name +": "+ message);  });
+socket.on('message', function(message) { io.emit('msg',socket.name +": "+ message);  });
+
+socket.on('message-private', function(message) { 
+
+  client.query('SELECT * FROM logueados where usuario="'+message.user+'"', function (err, results, fields) {                   
+
+                console.log("id session "+results[0].id_session);
+
+                  io.to(results[0].id_session).emit('msg-private',socket.name+": "+ message.msg);   
+                  socket.emit('msg-private',"me : "+ message.msg);                        
+                            
+          }); 
+
+  });
 
 
   socket.on('name', function(data) {
@@ -207,10 +269,15 @@ socket.on('disconnect',function() { if(socket.name){
               console.log("Login success "+socket.name);
 
               client.query('SELECT * FROM logueados where usuario ="'+data+'"',function (e,r,f) { 
-                                      if(r.length == 0){ 
-                                        client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[results[0].id,data]  );
-                                        console.log("Usuario insertado en logueados ");
-                                      } });             
+                              if(r.length == 0){ 
+                                client.query('INSERT INTO logueados SET id = ?,id_session=?  usuario = ?',[results[0].id,socket.id,data]  );
+                                console.log("Usuario insertado en logueados ");
+                              }
+                              else {
+      client.query('update logueados SET id_session=?  where usuario = ?',[socket.id,data]  );
+
+                              }
+                                });             
               
 
               client.query('SELECT * FROM logueados', function (err, resp, fields) { 
