@@ -118,7 +118,7 @@
 
             <div class="panel panel-default">
             <div onclick ="$('#nodechat-private').toggle()" class="panel-heading">
-              <h3 class="panel-title"><span class="glyphicon glyphicon-cog"></span><div  style="display: inline" id="nameUser">On</div>
+              <h3 class="panel-title"><span class="glyphicon glyphicon-cog" style="float:right"></span><div  style="display: inline" id="nameUser">On</div>
               </h3>
             </div>
             <div id="nodechat-private"class="panel-body scroll">
@@ -160,6 +160,9 @@
   <script src="js/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
+   var socket = io(); // Inicializamos socketIO en el cliente
+    socket.emit('name', localStorage.getItem("user"));
+
   function speakTABLE(user){
 
     $('#nameUser').text(" "+user);
@@ -216,8 +219,7 @@
     });
 
 
-    var socket = io(); // Inicializamos socketIO en el cliente
-    socket.emit('name', localStorage.getItem("user"));
+   
     
 function sessionClose(){  
       localStorage.removeItem("user");      
@@ -285,16 +287,18 @@ function sessionClose(){
       });
 $("#dataUser-private").keyup(function(event){
   
-          if(event.keyCode == 13 && $('#dataUser-private').val() != ""){
+          if(event.keyCode == 13 && $('#dataUser-private').val() != "" ){
 
+            if($('#dataUser-private-info').val()!=""){
 
-            socket.emit('message-private',{msg: $('#dataUser-private').val(), user : $('#dataUser-private-info').val() });
+                  socket.emit('message-private',{msg: $('#dataUser-private').val(), user : $('#dataUser-private-info').val() });
 
-            $('#dataUser-private').val('');
-            
-            }
+                  $('#dataUser-private').val('');
+                  
+            }else{ alert("elige a un amigo para chatear xD"); return true;}
+          }
             return false;    
-      });
+});
 
      $("#msg_status").keyup(function(event){
           if(event.keyCode == 13 && $('#msg_status').val() != ""){
