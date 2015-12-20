@@ -85,7 +85,7 @@
                   <div class="list-group">
                     <% users.forEach(function(usr){%> 
 
-                     <a href='#' class='list-group-item'>
+                     <a href='#' onclick=speakTABLE('<%- usr.usuario %>') class='list-group-item'>
                               <%- usr.usuario %> 
                             <span class="glyphicon glyphicon-stop" style="color:green; float:rigth"></span>
                               
