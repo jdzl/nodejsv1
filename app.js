@@ -245,9 +245,10 @@ socket.on('message-private', function(message) {
   client.query('SELECT * FROM logueados where usuario="'+message.user+'"', function (err, results, fields) {                   
 
                 console.log("id session "+results[0].id_session);
+                  var msgfull = socket.name+": "+ message.msg;
 
-                  io.to(results[0].id_session).emit('msg-private',socket.name+": "+ message.msg);   
-                  socket.emit('msg-private',"me : "+ message.msg);                        
+                  io.to(results[0].id_session).emit('msg-private',{ user : socket.name , msg: msgfull });   
+                  socket.emit('msg-private-me',"me : "+ message.msg);                        
                             
           }); 
 

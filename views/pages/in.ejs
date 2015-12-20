@@ -250,7 +250,15 @@ function sessionClose(){
 
       socket.on('msg-private', function (msg) {
 
-            $("#nodechat-private").html($("#nodechat-private").html()+"</br>"+msg);
+            $("#nodechat-private").html($("#nodechat-private").html()+"</br>"+msg.msg);
+            $("#dataUser-private-info").val(msg.user);
+            $("#nodechat-private").animate({scrollTop : $("#nodechat-private").height()},800 );
+
+
+      });
+        socket.on('msg-private-me', function (msg) {
+
+            $("#nodechat-private").html($("#nodechat-private").html()+"</br>"+msg);            
             $("#nodechat-private").animate({scrollTop : $("#nodechat-private").height()},800 );
 
 
