@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 var sess = {
   secret: 'keyboard cat',
-  cookie: {maxAge: 60000}  , 
+  cookie: {maxAge: 160000}  , 
   resave: true, 
   saveUninitialized: true 
 }
@@ -84,18 +84,20 @@ client.query("SELECT p.msg as msg ,u.usuario  as user \
                   console.log("Error: " + err.message);
                   throw err;
               }    
-    client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',function (e,r,f) { 
+client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',function (e,r,f) { 
                                       if(r.length == 0){ 
               client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[req.session.id_us,req.session.user]  );
                                         console.log("Usuario insertado en logueados ");
                                       } });  
+
               client.query('SELECT * FROM logueados', function (err, resp, fields) { 
                                                               if (err) {
                                                                   console.log("Error: " + err.message);
                                                                   throw err;
                                                               }          
                                                     
-                                                       
+                                              console.log(" uuuu --> ");          
+                                              console.log(resp);          
               res.render('pages/in',{ user: req.session.user, 
                                       msgs : r ,
                                       users : resp
@@ -271,7 +273,7 @@ socket.on('message-private', function(message) {
 
               client.query('SELECT * FROM logueados where usuario ="'+data+'"',function (e,r,f) { 
                               if(r.length == 0){ 
-                                client.query('INSERT INTO logueados SET id = ?,id_session=?  usuario = ?',[results[0].id,socket.id,data]  );
+                                client.query('INSERT INTO logueados SET id = ?,id_session=?,  usuario = ?',[results[0].id,socket.id,data]  );
                                 console.log("Usuario insertado en logueados ");
                               }
                               else {
@@ -281,15 +283,16 @@ socket.on('message-private', function(message) {
                                 });             
               
 
-              client.query('SELECT * FROM logueados', function (err, resp, fields) { 
+              /*client.query('SELECT * FROM logueados', function (err, resp, fields) { 
                                                               if (err) {
                                                                   console.log("Error: " + err.message);
                                                                   throw err;
-                                                              }          
+                                                              }    
+
                                                     
                                                     console.log("Actualizando logueados");
                                                     io.emit('infoUsers', resp);    
-                                                }); 
+                                                }); */
           
               
               }          
