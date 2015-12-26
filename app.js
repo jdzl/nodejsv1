@@ -7,6 +7,7 @@ var io   = require('socket.io')(http);
 var path    = require("path");
 var bodyParser = require('body-parser')
 var session = require('express-session')
+var cookieParser = require('cookie-parser');
 
 var mysql = require('mysql'); 
 
@@ -21,13 +22,17 @@ client.query('USE test');
 
 app.set('view engine', 'ejs');
 //cookies
+app.use(cookieParser());
+
 app.use(bodyParser.urlencoded({ extended: false }))
+
 
 var sess = {
   secret: 'keyboard cat',
-  cookie: {maxAge: 160000}  , 
+  cookie: {maxAge: null}  , 
   resave: true, 
-  saveUninitialized: true 
+  saveUninitialized: true ,
+  key: 'express.sid'
 }
 app.use(session(sess))
 
@@ -42,6 +47,9 @@ function login(req,res,next){
 
 
 }
+app.get('/', function (req, res) {
+  res.send('Hello World!');
+});
 app.get('/auth',function(req,res){ res.redirect('/in');});
 app.post('/auth',function(req,res){
   
@@ -97,10 +105,12 @@ client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',fun
                                                               }          
                                                     
                                               console.log(" uuuu --> ");          
-                                              console.log(resp);          
+                                              console.log(resp);  
+                                                     
               res.render('pages/in',{ user: req.session.user, 
                                       msgs : r ,
-                                      users : resp
+                                      users : resp,
+                                      id : req.session.id_us
                                     } );  
                                                 
               }); 
@@ -120,7 +130,7 @@ app.get('/out',function(req,res){
 app.post('/msg/insert',function(req,res){
   console.log("Message Ajax DATA  Insert");  
   
-  client.query('INSERT INTO publicaciones SET id = ?,id_us = ?,  msg = ?',['',req.session.id_us,req.body.msg]  );
+  client.query('INSERT INTO publicaciones SET id = ?,id_us = ?,  msg = ?',['',req.body.hidden,req.body.msg]  );
   res.redirect('/in');
 
 });
@@ -133,7 +143,7 @@ app.post('/users/search',function(req,res){
     var html = '<div class="list-group">';
     for (var i = resp.length - 1; i >= 0; i--) {
 
-      html+= " <a href='#' class='list-group-item'>"+resp[i].usuario+ "<span class='badge'>"+resp[i].id+" </span> </a> ";
+      html+= " <a href='users/"+resp[i].usuario+"' class='list-group-item'>"+resp[i].usuario+ "<span class='badge'>"+resp[i].id+" </span> </a> ";
     };
     html +="</div>";
     res.send(resp.length >0 ? html : "No lo hemos encotrado.. :(");
@@ -144,12 +154,6 @@ app.post('/users/search',function(req,res){
 
 
 });
-/*
-app.get('/users/add/:name',function(req,res){
-
-res.send("<img src='../../img/loading.gif'> <br/> Ooops  en construccion "+req.param('name'));
-});
-*/
 app.get('/users/add',function(req,res){
 
   var query = require('url').parse(req.url,true).query;
@@ -167,12 +171,38 @@ res.send("<img src='../../img/loading.gif'> <br/> Sus Datos son : <br/> "+
     pwd +" <br/>" 
   );
 });
+
+//download
+
+app.get('/down/:file(*)', function(req, res, next){
+  var file = req.params.file
+    , path = __dirname + '/files/' + file;
+
+  res.download(path);
+});
+app.use(function(err, req, res, next){
+  // special-case 404s,
+  // remember you could
+  // render a 404 template here
+  if (404 == err.status) {
+    res.statusCode = 404;
+    res.send('Cant find that file, sorry!');
+  } else {
+    next(err);
+  }
+});
+
 app.get('/users/del',function(req,res){
     var query = require('url').parse(req.url,true).query;
     var id = query.id;
     var option = query.option;
 
 res.send(option+" <img src='../img/loading.gif'> <br/> Ooops  en construccion "+id);
+
+});
+app.get('/users/:name',function(req,res){
+
+  res.send("<img src='../img/loading.gif'> <br/>Profile  :D<br/>"+req.param('name'));
 
 });
 app.get('/users/*',function(req,res){
@@ -214,16 +244,34 @@ app.use(express["static"](__dirname + '/public'));
 
 
 //  Sockets 
+/*
+io.set('authorization', function (handshakeData, accept) {
 
+  if (handshakeData.headers.cookie) {
+
+    handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
+
+    handshakeData.sessionID = connect.utils.parseSignedCookie(handshakeData.cookie['express.sid'], 'secret');
+
+    if (handshakeData.cookie['express.sid'] == handshakeData.sessionID) {
+      return accept('Cookie is invalid.', false);
+    }
+
+  } else {
+    return accept('No cookie transmitted.', false);
+  } 
+
+  accept(null, true);
+});
+*/
 io.on('connection', function(socket) {
   
-console.log('New user connected'); 
-console.log('Id user'+socket.id); 
+console.log('New user connected ----> '+ socket.id); 
 
-
-  
-socket.on('disconnect',function() { if(socket.name){
-                          client.query('DELETE FROM logueados where usuario= ?',socket.name);  
+socket.on('disconnect',function() { 
+  /*
+  if(socket.name){
+                          //client.query('DELETE FROM logueados where usuario= ?',socket.name);  
 
                           client.query('SELECT * FROM logueados', function (err, results, fields) { 
                                       if (err) {
@@ -231,12 +279,12 @@ socket.on('disconnect',function() { if(socket.name){
                                           throw err;
                                       }          
                             
-                                      io.emit('infoUsers', results);  
-                                      io.emit('msg',socket.name +"  Se ha ido.. ");  
+                            console.log("se fue uno y llamo infousers");
+                                     io.emit('infoUsers', results);  
+                          
                                   }); 
               }
-
-    console.log('User disconnected');
+              */
 
   });
   
@@ -244,28 +292,35 @@ socket.on('message', function(message) { io.emit('msg',socket.name +": "+ messag
 
 socket.on('message-private', function(message) { 
 
-  client.query('SELECT * FROM logueados where usuario="'+message.user+'"', function (err, results, fields) {                   
+  client.query('SELECT * FROM logueados WHERE usuario="'+message.user+'"', function (err, results, fields) {                   
 
                 console.log("id session "+results[0].id_session);
                   var msgfull = socket.name+": "+ message.msg;
 
-                  io.to(results[0].id_session).emit('msg-private',{ user : socket.name , msg: msgfull });   
-                  socket.emit('msg-private-me',"me : "+ message.msg);                        
+                  if(results[0].id_session == socket.id){
+
+                      io.to(results[0].id_session).emit('msg-private',{ user : socket.name , msg: msgfull });   
+                      
+
+                  }else {
+
+                      io.to(results[0].id_session).emit('msg-private',{ user : socket.name , msg: msgfull });   
+                      socket.emit('msg-private-me',socket.name+" : "+ message.msg);                        
+                  }
+
+                  
                             
           }); 
 
   });
 
 
-  socket.on('name', function(data) {
-      console.log(" Envio nombre----> "+data);
-      client.query('SELECT * FROM usuarios where usuario ="'+data+'"',
-             function (err, results, fields) {
- 
-              if (err) {
-                  console.log("Error: " + err.message);
-                  throw err;
-              }
+socket.on('name', function(data) {
+  console.log(" Event name running --");
+
+  client.query('SELECT * FROM usuarios where usuario ="'+data+'"',
+               function (err, results, fields) { 
+              
               if(results.length > 0){
               
               socket.name  = data;
@@ -277,22 +332,20 @@ socket.on('message-private', function(message) {
                                 console.log("Usuario insertado en logueados ");
                               }
                               else {
-      client.query('update logueados SET id_session=?  where usuario = ?',[socket.id,data]  );
+
+                            client.query('UPDATE logueados SET id_session=?  WHERE usuario = ?',[socket.id,data]  );
 
                               }
                                 });             
-              
+             
 
-              /*client.query('SELECT * FROM logueados', function (err, resp, fields) { 
-                                                              if (err) {
-                                                                  console.log("Error: " + err.message);
-                                                                  throw err;
-                                                              }    
-
-                                                    
-                                                    console.log("Actualizando logueados");
-                                                    io.emit('infoUsers', resp);    
-                                                }); */
+              client.query('SELECT * FROM logueados',
+                           function (err, resp, fields) { 
+                                          
+                                    console.log("Actualizando logueados");
+                                    io.emit('infoUsers', resp);
+                                //  socket.broadcast.emit('infoUsers', resp);
+                          }); 
           
               
               }          

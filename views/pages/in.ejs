@@ -63,6 +63,7 @@
 <div  class="row ">
   <div class="col-xs-4 col-md-offset-4">
     <kbd><% if(user){%><%= user%><% } %> What's on your mind?</kbd>
+    <input id="hidden" type="hidden" value="<% if(id){%><%= id%><% } %> ">
     <textarea id="msg_status" class="form-control" rows="1" style="resize:none"></textarea>
     <p class="glyphicon glyphicon-camera"></p> 
     <p class="glyphicon glyphicon-link"></p>
@@ -83,9 +84,10 @@
                  <div id="resp">       
                           
                   <div class="list-group">
+                    <div id="user_new"></div>
                     <% users.forEach(function(usr){%> 
 
-                     <a href='#' onclick=speakTABLE('<%- usr.usuario %>') class='list-group-item'>
+                <a href='#' onclick=speakTABLE('<%- usr.usuario %>') class='list-group-item'>
                               <%- usr.usuario %> 
                             <span class="glyphicon glyphicon-stop" style="color:green; float:rigth"></span>
                               
@@ -207,7 +209,7 @@
                     $.ajax({
                       method: "POST",
                       url: "/msg/insert",
-                      data: { name: localStorage.getItem("user") , msg: $('#msg_status').val() }
+                      data: { hidden : $('#hidden').val() ,name: localStorage.getItem("user") , msg: $('#msg_status').val() }
                     })
                       .done(function( msg ) {
                         
@@ -228,17 +230,18 @@ function sessionClose(){
     *
     *@Param msg :  select tabla logueados en  formato JSON
     */
-    socket.on('clearuser', function (m) { });
+
 
     socket.on('infoUsers', function (msg) {
 
       var html_table=` <div class="list-group">`;
-                for (var i = msg.length - 1; i >= 0; i--) {
+                for (var i = msg.length -1; i >= 0; i--) {
 
                     html_table += "<a href='#' onclick=speakTABLE('"+msg[i].usuario+"')  class='list-group-item'>"+msg[i].usuario +'<span class="glyphicon glyphicon-stop" style="color:green; position:relative;float: right;"></span> </a>';
                 };
 
           html_table+=`</div>`;
+          
 
           $("#resp").html(html_table);
       });
