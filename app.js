@@ -122,7 +122,10 @@ client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',fun
 });
 
 app.get('/out',function(req,res){
+  
+  client.query('DELETE FROM logueados where usuario= ?',req.session.user);  
   delete req.session.user;  
+
   var html_msg = '<div class="alert alert-warning">Session Cerrada</div> ';
   res.render('pages/login',{msg: html_msg});
 });
@@ -244,26 +247,7 @@ app.use(express["static"](__dirname + '/public'));
 
 
 //  Sockets 
-/*
-io.set('authorization', function (handshakeData, accept) {
 
-  if (handshakeData.headers.cookie) {
-
-    handshakeData.cookie = cookie.parse(handshakeData.headers.cookie);
-
-    handshakeData.sessionID = connect.utils.parseSignedCookie(handshakeData.cookie['express.sid'], 'secret');
-
-    if (handshakeData.cookie['express.sid'] == handshakeData.sessionID) {
-      return accept('Cookie is invalid.', false);
-    }
-
-  } else {
-    return accept('No cookie transmitted.', false);
-  } 
-
-  accept(null, true);
-});
-*/
 io.on('connection', function(socket) {
   
 console.log('New user connected ----> '+ socket.id); 
@@ -295,17 +279,21 @@ socket.on('message-private', function(message) {
   client.query('SELECT * FROM logueados WHERE usuario="'+message.user+'"', function (err, results, fields) {                   
 
                 console.log("id session "+results[0].id_session);
+                console.log("msg "+socket.name+": "+ message.msg);
+                console.log("-------"+ message.user);
+                console.log("sessioon id user  "+results[0].id );
                   var msgfull = socket.name+": "+ message.msg;
+
 
                   if(results[0].id_session == socket.id){
 
-                      io.to(results[0].id_session).emit('msg-private',{ user : socket.name , msg: msgfull });   
+                      io.to(results[0].id_session).emit('msg-private',{ id:  socket.id_us ,user : socket.name , msg: msgfull });   
                       
 
                   }else {
 
-                      io.to(results[0].id_session).emit('msg-private',{ user : socket.name , msg: msgfull });   
-                      socket.emit('msg-private-me',socket.name+" : "+ message.msg);                        
+                      io.to(results[0].id_session).emit('msg-private',{ id:  socket.id_us, user : socket.name , msg: msgfull });   
+                      socket.emit('msg-private-me',{ id: results[0].id , msg :  msgfull});                        
                   }
 
                   
@@ -316,6 +304,7 @@ socket.on('message-private', function(message) {
 
 
 socket.on('name', function(data) {
+
   console.log(" Event name running --");
 
   client.query('SELECT * FROM usuarios where usuario ="'+data+'"',
@@ -333,6 +322,8 @@ socket.on('name', function(data) {
                               }
                               else {
 
+                          socket.id_us = r[0].id;
+                          console.log("GUardando en logueados id_session del socket "+socket.id);
                             client.query('UPDATE logueados SET id_session=?  WHERE usuario = ?',[socket.id,data]  );
 
                               }
