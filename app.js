@@ -9,7 +9,7 @@ var bodyParser = require('body-parser')
 var session = require('express-session')
 var cookieParser = require('cookie-parser');
 
-var mysql = require('mysql'); 
+var mysql = require('mysql');
 
 
 
@@ -18,7 +18,7 @@ var client = mysql.createConnection({
   user: 'root',
   password: ''
 });
-client.query('USE test');
+client.query('USE node');
 
 app.set('view engine', 'ejs');
 //cookies
@@ -29,8 +29,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 
 var sess = {
   secret: 'keyboard cat',
-  cookie: {maxAge: null}  , 
-  resave: true, 
+  cookie: {maxAge: null}  ,
+  resave: true,
   saveUninitialized: true ,
   key: 'express.sid'
 }
@@ -38,10 +38,10 @@ app.use(session(sess))
 
 function login(req,res,next){
 
-  if(typeof req.session.user != "undefined"){   
+  if(typeof req.session.user != "undefined"){
         next();
   }
-    else{    
+    else{
       res.redirect('/login');
     }
 
@@ -52,24 +52,24 @@ app.get('/', function (req, res) {
 });
 app.get('/auth',function(req,res){ res.redirect('/in');});
 app.post('/auth',function(req,res){
-  
+
   client.query('SELECT * FROM usuarios where usuario ="'+req.body.user+'" and password="'+req.body.pass+'"',
              function (err, results, fields) {
- 
+
               if (err) {
                   console.log("Error: " + err.message);
                   throw err;
               }
               if(results.length > 0){
-                req.session.user = req.body.user; 
+                req.session.user = req.body.user;
                 req.session.id_us = results[0].id;
                 res.redirect('/in');
 
-                
+
 
               }else{
-                 
-                  
+
+
                   var html_msg = '<div class="alert alert-warning"> Error en usuario o contraseña</div> ';
                     res.render('pages/login',{msg: html_msg});
               }
@@ -86,62 +86,62 @@ client.query("SELECT p.msg as msg ,u.usuario  as user \
                                where la.id_usuario = u.id and u.id= (SELECT id \
                                                        FROM usuarios \
                                                        WHERE usuario ='"+req.session.user+"')) ORDER BY p.id desc",function (err, r, f) {
- 
+
 
               if (err) {
                   console.log("Error: " + err.message);
                   throw err;
-              }    
-client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',function (e,r,f) { 
-                                      if(r.length == 0){ 
+              }
+client.query('SELECT * FROM logueados where usuario ="'+req.session.user+'"',function (e,r,f) {
+                                      if(r.length == 0){
               client.query('INSERT INTO logueados SET id = ?,  usuario = ?',[req.session.id_us,req.session.user]  );
                                         console.log("Usuario insertado en logueados ");
-                                      } });  
+                                      } });
 
-              client.query('SELECT * FROM logueados', function (err, resp, fields) { 
+              client.query('SELECT * FROM logueados', function (err, resp, fields) {
                                                               if (err) {
                                                                   console.log("Error: " + err.message);
                                                                   throw err;
-                                                              }          
-                                                    
-                                              console.log(" uuuu --> ");          
-                                              console.log(resp);  
-                                                     
-              res.render('pages/in',{ user: req.session.user, 
+                                                              }
+
+                                              console.log(" uuuu --> ");
+                                              console.log(resp);
+
+              res.render('pages/in',{ user: req.session.user,
                                       msgs : r ,
                                       users : resp,
                                       id : req.session.id_us
-                                    } );  
-                                                
-              }); 
+                                    } );
+
+              });
 
 
   });
 
-  
+
 });
 
 app.get('/out',function(req,res){
-  
-  client.query('DELETE FROM logueados where usuario= ?',req.session.user);  
-  delete req.session.user;  
+
+  client.query('DELETE FROM logueados where usuario= ?',req.session.user);
+  delete req.session.user;
 
   var html_msg = '<div class="alert alert-warning">Session Cerrada</div> ';
   res.render('pages/login',{msg: html_msg});
 });
 
 app.post('/msg/insert',function(req,res){
-  console.log("Message Ajax DATA  Insert");  
-  
+  console.log("Message Ajax DATA  Insert");
+
   client.query('INSERT INTO publicaciones SET id = ?,id_us = ?,  msg = ?',['',req.body.hidden,req.body.msg]  );
   res.redirect('/in');
 
 });
 app.post('/users/search',function(req,res){
-  console.log("Message Ajax DATA  search");  
-  
+  console.log("Message Ajax DATA  search");
+
   client.query('SELECT * FROM usuarios where usuario like "%'+req.body.data+'%" limit 6' , function (err, resp, fields) {
-                                                            
+
 
     var html = '<div class="list-group">';
     for (var i = resp.length - 1; i >= 0; i--) {
@@ -153,7 +153,7 @@ app.post('/users/search',function(req,res){
 
           }
   );
-  
+
 
 
 });
@@ -171,7 +171,7 @@ res.send("<img src='../../img/loading.gif'> <br/> Sus Datos son : <br/> "+
     email +" <br/>" +
     fname +" <br/>" +
     lname +" <br/>" +
-    pwd +" <br/>" 
+    pwd +" <br/>"
   );
 });
 
@@ -232,12 +232,12 @@ function overrideLogin(req,res,next){
     res.redirect('/in');
   }
     else{
-    next();      
+    next();
     }
 
 }
 app.get('/login',overrideLogin,function(req,res){
-  
+
   res.render('pages/login',{msg: ""});
   //__dirname : It will resolve to your project folder.
 });
@@ -246,37 +246,39 @@ app.get('/login',overrideLogin,function(req,res){
 app.use(express["static"](__dirname + '/public'));
 
 
-//  Sockets 
+//  Sockets
 
 io.on('connection', function(socket) {
-  
-console.log('New user connected ----> '+ socket.id); 
 
-socket.on('disconnect',function() { 
+console.log('New user connected ----> '+ socket.id);
+
+socket.on('disconnect',function() {
   /*
   if(socket.name){
-                          //client.query('DELETE FROM logueados where usuario= ?',socket.name);  
+                          //client.query('DELETE FROM logueados where usuario= ?',socket.name);
 
-                          client.query('SELECT * FROM logueados', function (err, results, fields) { 
+                          client.query('SELECT * FROM logueados', function (err, results, fields) {
                                       if (err) {
                                           console.log("Error: " + err.message);
                                           throw err;
-                                      }          
-                            
+                                      }
+
                             console.log("se fue uno y llamo infousers");
-                                     io.emit('infoUsers', results);  
-                          
-                                  }); 
+                                     io.emit('infoUsers', results);
+
+                                  });
               }
               */
 
   });
-  
+
 socket.on('message', function(message) { io.emit('msg',socket.name +": "+ message);  });
 
-socket.on('message-private', function(message) { 
+socket.on('message-private', function(message) {
 
-  client.query('SELECT * FROM logueados WHERE usuario="'+message.user+'"', function (err, results, fields) {                   
+  client.query('SELECT * FROM logueados WHERE usuario="'+message.user+'"', function (err, results, fields) {
+              if(results.length > 0) {
+                console.log("antes del error --------------");
 
                 console.log("id session "+results[0].id_session);
                 console.log("msg "+socket.name+": "+ message.msg);
@@ -287,18 +289,19 @@ socket.on('message-private', function(message) {
 
                   if(results[0].id_session == socket.id){
 
-                      io.to(results[0].id_session).emit('msg-private',{ id:  socket.id_us ,user : socket.name , msg: msgfull });   
-                      
+                      io.to(results[0].id_session).emit('msg-private',{ id:  socket.id_us ,user : socket.name , msg: msgfull });
+
 
                   }else {
 
-                      io.to(results[0].id_session).emit('msg-private',{ id:  socket.id_us, user : socket.name , msg: msgfull });   
-                      socket.emit('msg-private-me',{ id: results[0].id , msg :  msgfull});                        
+                      io.to(results[0].id_session).emit('msg-private',{ id:  socket.id_us, user : socket.name , msg: msgfull });
+                      socket.emit('msg-private-me',{ id: results[0].id , msg :  msgfull});
                   }
 
-                  
-                            
-          }); 
+}{
+console.log("no hya nada en la base de datos omfg ---------");
+}
+          });
 
   });
 
@@ -306,45 +309,39 @@ socket.on('message-private', function(message) {
 socket.on('name', function(data) {
 
   console.log(" Event name running --");
+  socket.name  = data;
+  console.log("Login success "+socket.name);
 
-  client.query('SELECT * FROM usuarios where usuario ="'+data+'"',
-               function (err, results, fields) { 
-              
-              if(results.length > 0){
-              
-              socket.name  = data;
-              console.log("Login success "+socket.name);
-
-              client.query('SELECT * FROM logueados where usuario ="'+data+'"',function (e,r,f) { 
-                              if(r.length == 0){ 
+  client.query('SELECT * FROM logueados where usuario ="'+data+'"',function (e,r,f) {
+              if(r.length == 0){
                                 client.query('INSERT INTO logueados SET id = ?,id_session=?,  usuario = ?',[results[0].id,socket.id,data]  );
                                 console.log("Usuario insertado en logueados ");
                               }
                               else {
 
-                          socket.id_us = r[0].id;
-                          console.log("GUardando en logueados id_session del socket "+socket.id);
-                            client.query('UPDATE logueados SET id_session=?  WHERE usuario = ?',[socket.id,data]  );
+                                socket.id_us = r[0].id;
+                                console.log("GUardando en logueados id_session del socket "+socket.id);
+                                client.query('UPDATE logueados SET id_session=?  WHERE usuario = ?',[socket.id,data]  );
 
                               }
-                                });             
-             
+              });
+
 
               client.query('SELECT * FROM logueados',
-                           function (err, resp, fields) { 
-                                          
+                           function (err, resp, fields) {
+
                                     console.log("Actualizando logueados");
                                     io.emit('infoUsers', resp);
                                 //  socket.broadcast.emit('infoUsers', resp);
-                          }); 
-          
-              
-              }          
-    
-      }); 
-    
+                          });
+
+
+
+
+
+
     });
-  
+
 });
 
 
@@ -352,17 +349,3 @@ http.listen(8080, function() {
   console.log('Running Server...');
   console.log('listening on *:8080');
 });
-
-function allLog(){
-
-      client.query('SELECT * FROM logueados', function (err, resp, fields) { 
-                                                                  if (err) {
-                                                                      console.log("Error: " + err.message);
-                                                                      throw err;
-                                                                  }          
-                                              
-                  return resp;
-                                                    
-      }); 
-
-}

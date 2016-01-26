@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Unichat</title> 
+    <title>Unichat</title>
     <% include ../partials/head %>
-   
+
     <style >
     div.scroll {
-  
+
     width: 100%;
     height: 270px;
     overflow-y: scroll;
@@ -29,25 +29,25 @@
   <div class="navbar-header">
 
     <a class="navbar-brand glyphicon glyphicon-eye-open" href="#"> Unichat</a>
-    
+
   </div>
- 
+
   <!-- Agrupar los enlaces de navegación, los formularios y cualquier
        otro elemento que se pueda ocultar al minimizar la barra -->
   <div class="collapse navbar-collapse navbar-ex1-collapse">
-    <ul class="nav navbar-nav">    
-    
+    <ul class="nav navbar-nav">
+
     </ul>
- 
+
     <form class="navbar-form navbar-left" role="search">
       <div class="form-group">
         <input id="search" type="text" class="form-control" placeholder="Search">
-         <div id="complete_search" style="position: absolute; background:white; border:12px; width:20%">   
+         <div id="complete_search" style="position: absolute; background:white; border:12px; width:20%">
         </div>
-      </div>  
-     
+      </div>
+
     </form>
- 
+
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">Home</a></li>
       <li class="dropdown">
@@ -55,7 +55,7 @@
           <% if(user){%><%= user%><% } %><b class="caret"></b>
         </a>
         <ul class="dropdown-menu">
-          <li><a href="#">Settings</a></li>          
+          <li><a href="#">Settings</a></li>
           <li><a href="#">Help</a></li>
           <li class="divider"></li>
           <li><a onclick="sessionClose()" href="/out"> <p class="glyphicon glyphicon-off"> Log out</p> </a></li>
@@ -72,7 +72,7 @@
     <kbd><% if(user){%><%= user%><% } %> What's on your mind?</kbd>
     <input id="hidden" type="hidden" value="<% if(id){%><%= id%><% } %> ">
     <textarea id="msg_status" class="form-control ta8" rows="1" ></textarea>
-    <p class="glyphicon glyphicon-camera"></p> 
+    <p class="glyphicon glyphicon-camera"></p>
     <p class="glyphicon glyphicon-link"></p>
     <button id="send_status" style="float:right"class="btn btn-primary">Post</button>
   </div>
@@ -84,27 +84,27 @@
 
      <!-- /.navbar-top-links -->
 <div class="col-xs-2">
-  <div class="panel panel-primary">           
+  <div style="z-index:2000; position:relative"class="panel panel-primary">
             <div class="panel-heading"><span class="glyphicon glyphicon-user"></span> Users </div>
 
-            <div class="panel-body">    
-                 <div id="resp">       
-                          
+            <div class="panel-body">
+                 <div id="resp">
+
                   <div class="list-group">
                     <div id="user_new"></div>
-                    <% users.forEach(function(usr){%> 
+                    <% users.forEach(function(usr){%>
 
                 <a href='#' onclick=speakTABLE(<%- usr.id %> ,'<%- usr.usuario %>') class='list-group-item'>
-                              <%- usr.usuario %> 
+                              <%- usr.usuario %>
                             <span class="glyphicon glyphicon-stop" style="color:green; float:rigth"></span>
-                              
+
                        </a>
                     <%}); %>
                   </div>
 
-                 </div>      
-            </div>   
-     
+                 </div>
+            </div>
+
 </div>
 </div>
 <!-- begin  chat-->
@@ -117,13 +117,13 @@
               <h3 class="panel-title"><span class="glyphicon glyphicon-cog" style="float:right" ></span> Overview</h3>
             </div>
             <div id="nodechat"class="panel-body scroll">
-              
+
             </div>
             <div class="input-group input-group-lg">
                 <span class="input-group-addon" id="sizing-addon1"> <span class="glyphicon glyphicon-tint"></span></span>
                 <input id="dataUser" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
           </div>
-          </div>  
+          </div>
 </div>
 
 
@@ -134,10 +134,10 @@
 <!-- end chat-->
 
 
-  <div class="col-xs-6">  
+  <div class="col-xs-6">
     <div id="msg_events"></div>
     <h2>Loop</h2>
-    
+
       <% msgs.forEach(function(msg,index) { %>
       <div id="<%= msg.user+index %>" class="panel panel-default">
           <div class="panel-body">
@@ -146,21 +146,22 @@
           <div class="panel-footer">
           <p class="glyphicon glyphicon-pencil"></p>   <%= msg.user %> <p style="float:right "class="glyphicon glyphicon-remove" onclick="$('#<%= msg.user+index %>').hide()"></p> </div>
       </div>
-      
+
       <% }); %>
-        
-             
-    
-    
+
+
+
+
   </div>
 </div>
-  
 
-  
-  
+
+
+
   <script src="js/jquery.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
    var socket = io(); // Inicializamos socketIO en el cliente
     socket.emit('name', localStorage.getItem("user"));
 
@@ -169,15 +170,16 @@ function speakTABLE(id,user){
       if($('#nodechat-private'+id).length ==0){
 
           createWindowChat(id,user);
+          $('#dataUser-private'+id).focus();
         }
 }
 
   $('#complete_search').hide();
 
-   $('#search').keyup(function(){  
+   $('#search').keyup(function(){
 
         if($('#search').val().length > 1){
-          
+
 
         $('#complete_search').show(1000);
         $('#complete_search').html("<img src='img/loading.gif'>");
@@ -188,10 +190,10 @@ function speakTABLE(id,user){
                       data: { data: $('#search').val() }
                     })
                       .done(function( msg ) {
-                        
+
                         $('#complete_search').html(msg);
 
-                      });                        
+                      });
 
         }
         if($('#search').val().length <=1){
@@ -200,33 +202,33 @@ function speakTABLE(id,user){
         }
 
     });
-    $('#msg_status').click(function(){  
+    $('#msg_status').click(function(){
         $(this).attr('rows', '3');
     });
 
-    $('#send_status').click(function(){          
-  
-       if($('#msg_status').val() != ''){      
-       
+    $('#send_status').click(function(){
+
+       if($('#msg_status').val() != ''){
+
                     $.ajax({
                       method: "POST",
                       url: "/msg/insert",
                       data: { hidden : $('#hidden').val() ,name: localStorage.getItem("user") , msg: $('#msg_status').val() }
                     })
                       .done(function( msg ) {
-                        
+
                         $('#msg_status').val('');
                         $('#msg_status').attr('rows', '1');
-                      });                      
+                      });
     }
 
     });
 
 
-   
-    
-function sessionClose(){  
-      localStorage.removeItem("user");      
+
+
+function sessionClose(){
+      localStorage.removeItem("user");
 }
     /*
     *
@@ -243,7 +245,7 @@ function sessionClose(){
                 };
 
           html_table+=`</div>`;
-          
+
 
           $("#resp").html(html_table);
       });
@@ -255,7 +257,7 @@ function sessionClose(){
 
       });
 
-      socket.on('msg-private', function (msg) {       
+      socket.on('msg-private', function (msg) {
 /*
             $("#nodechat-private").html($("#nodechat-private").html()+"</br>"+msg.msg);
             $("#dataUser-private-info").val(msg.user);
@@ -275,105 +277,85 @@ function sessionClose(){
         socket.on('msg-private-me', function (data) {
 
 
-            $("#nodechat-private"+data.id).html($("#nodechat-private"+data.id).html()+"</br>"+data.msg);            
+            $("#nodechat-private"+data.id).html($("#nodechat-private"+data.id).html()+"</br>"+data.msg);
             $("#nodechat-private"+data.id).animate({scrollTop : $("#nodechat-private"+data.id).height()},800 );
 
 
       });
-      
+
 $('#sendData').click(function(){
 
         socket.emit('message',$('#dataUser').val()  );
         $('#dataUser').val('');
         return false;
-      }); 
+      });
 $('#clearData').click(function(){
         $('#nodechat').html('');
         return false;
-      }); 
+      });
 $("#dataUser").keyup(function(event){
           if(event.keyCode == 13 && $('#dataUser').val() != ""){
 
             socket.emit('message',$('#dataUser').val()  );
             $('#dataUser').val('');
-            
+
             }
-            return false;    
+            return false;
       });
      /*
      Chat 1 to 1
      Private
-      msg send to User * 
+      msg send to User *
      */
-$("#dataUser-private").keyup(function(event){
 
-  
-          if(event.keyCode == 13 && $('#dataUser-private').val() != "" ){
-
-            if($('#dataUser-private-info'+$("#dataUser-private").attr("data")).val()!=""){
-
-                  socket.emit('message-private',{
-
-                            msg: $('#dataUser-private').val(), 
-                            user : $('#dataUser-private-info'+$("#dataUser-private").attr("data")).val() 
-                  });
-                  $('#dataUser-private').val('');
-                  
-            }else{ alert("elige a un amigo para chatear xD"); return true;}
-          }
-          
-            return false;    
-});
 
      $("#msg_status").keyup(function(event){
           if(event.keyCode == 13 && $('#msg_status').val() != ""){
 
             socket.emit('message status',$('#msg_status').val()  );
             $('#msg_status').val('');
-            
+
             }
-            return false;    
+            return false;
       });
-     
+
   function createWindowChat(id,user){
 
 
     var node = `<div  id="`+user+id+`" class="col-xs-3" style="float:right!important">
             <div class="panel panel-default">
-            <div onclick ="$('#nodechat-private').toggle()" class="panel-heading">
+            <div onclick ="$('#nodechat-private`+id+`').toggle()" class="panel-heading">
               <h3 class="panel-title"><span class="glyphicon glyphicon-cog" style="float:right"></span><div  style="display: inline" id="nameUser`+id+`">`+user+`</div>
               </h3>
             </div>
             <div id="nodechat-private`+id+`"class="panel-body scroll">
-              
+
             </div>
             <div class="input-group input-group-lg">
                 <span class="input-group-addon" id="sizing-addon1"> <span class="glyphicon glyphicon-tint"></span></span>
                 <input id="dataUser-private-info`+id+`" type="hidden"  value="`+user+`">
-                <input id="dataUser-private" data="`+id+`" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
+                <input id="dataUser-private`+id+`" data="`+id+`" type="text" class="form-control" placeholder="" aria-describedby="sizing-addon1">
           </div>
-          </div>  
+          </div>
     </div> `;
 
     $('#spaceChat').append(node);
-    $("#dataUser-private").keyup(function(event){
+    $("#dataUser-private"+id).keyup(function(event){
 
-  
-          if(event.keyCode == 13 && $('#dataUser-private').val() != "" ){
 
-            if($('#dataUser-private-info'+$("#dataUser-private").attr("data")).val()!=""){ 
-         
+          if(event.keyCode == 13 && $('#dataUser-private'+id).val() != "" ){
+
                   socket.emit('message-private',{
 
-                            msg: $('#dataUser-private').val(), 
-                            user : $('#dataUser-private-info'+$("#dataUser-private").attr("data")).val() 
+                            msg: $('#dataUser-private'+id).val(),
+                            user : $('#dataUser-private-info'+$("#dataUser-private"+id).attr("data")).val()
                   });
-                  $('#dataUser-private').val('');
-                  
-            }else{ alert("elige a un amigo para chatear xD"); return true;}
+                  $('#dataUser-private'+id).val('');
+
+
           }
-          
-            return false;    
+
+            return false;
 });
 
 

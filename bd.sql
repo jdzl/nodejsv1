@@ -1,6 +1,6 @@
-create database test;
-use test;
-CREATE TABLE personaje(
+create database if not exists node;
+use node;
+CREATE TABLE  personaje(
    personaje_id smallint(5) unsigned not null auto_increment primary key,
    nombre varchar(50) not null,
    apellido varchar(50) not null,
@@ -9,7 +9,7 @@ CREATE TABLE personaje(
 CREATE TABLE logueados (
   id INT(11) NOT NULL ,
   id_session VARCHAR(50) NOT NULL,
-  usuario VARCHAR(20) NOT NULL,  
+  usuario VARCHAR(20) NOT NULL,
   PRIMARY KEY  (id)
 );
 CREATE TABLE usuarios (
@@ -40,15 +40,15 @@ INSERT INTO usuarios VALUES ('','admin','had');
 INSERT INTO usuarios VALUES ('','hans','had');
 
 /*
-SELECT msg 
+SELECT msg
 FROM   publicaciones
 where id_us  in (SELECT la.id_amigo FROM  lista_amigos la, usuarios u where la.id_usuario = u.id and u.id=1);
 
-SELECT msg   
-              FROM   publicaciones 
-              where id_us  in (SELECT la.id_amigo 
-                               FROM  lista_amigos la, usuarios u 
-                               where la.id_usuario = u.id and u.id= (SELECT id 
-                                                       FROM usuarios 
+SELECT msg
+              FROM   publicaciones
+              where id_us  in (SELECT la.id_amigo
+                               FROM  lista_amigos la, usuarios u
+                               where la.id_usuario = u.id and u.id= (SELECT id
+                                                       FROM usuarios
                                                        WHERE usuario ='native'))
 */
